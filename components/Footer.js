@@ -40,7 +40,7 @@ export default function Footer() {
       {/* Columns */}
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
         <div>
-          <img src="/logo.png" alt="iEagle" className="mb-4 h-20 w-auto" />
+          <img src="/logo.png" alt="iEagle" className="mb-4 h-28 w-auto md:h-32" />
           <p className="mb-5 max-w-xs text-white/70">{SITE.tagline} A business network connecting members across states and districts.</p>
           <div className="flex gap-2.5">
             {Object.entries(ICONS).map(([name, { color, path }]) => (

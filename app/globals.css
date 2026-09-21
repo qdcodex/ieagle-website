@@ -82,7 +82,7 @@ form.stack{display:grid;gap:12px}
 .social-float{position:fixed;left:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:70;border-radius:0 10px 10px 0;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.25)}
 .social-float a{width:44px;height:44px;display:flex;align-items:center;justify-content:center;transition:width .15s}
 .social-float a:hover{width:54px}
-@media(max-width:600px){.social-float{top:auto;bottom:0;left:0;right:0;transform:none;flex-direction:row;border-radius:0}.social-float a{flex:1;width:auto}.social-float a:hover{width:auto}.wa-float,.chat-fab{bottom:64px!important}.chat{bottom:130px!important}}
+@media(max-width:600px){.social-float{top:auto;bottom:0;left:0;right:0;transform:none;flex-direction:row;border-radius:0}.social-float a{flex:1;width:auto}.social-float a:hover{width:auto}.chat-fab{bottom:62px!important}.wa-float{bottom:126px!important}.chat{bottom:130px!important}body{padding-bottom:46px}}
 
 /* chatbot */
 .chat-fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:1.5rem;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.3);z-index:80}
@@ -125,3 +125,6 @@ form.stack{display:grid;gap:12px}
 .feed-in{animation:feedIn .5s ease both}
 @keyframes ping{75%,100%{transform:scale(2.2);opacity:0}}
 .ping{animation:ping 1.6s cubic-bezier(0,0,.2,1) infinite}
+
+/* hide floating widgets while the mobile menu is open */
+.menu-open .wa-float,.menu-open .chat-fab,.menu-open .chat,.menu-open .social-float{display:none!important}

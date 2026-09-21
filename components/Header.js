@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X, Phone, ArrowRight } from "lucide-react";
+import { ChevronDown, Phone, ArrowRight } from "lucide-react";
+import MobileMenu, { MenuButton } from "@/components/MobileMenu";
 import { NAV, SITE } from "@/lib/data";
 
 const CTA = NAV.find((n) => n.highlight);
@@ -11,7 +12,6 @@ const ITEMS = NAV.filter((n) => !n.highlight);
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [sub, setSub] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -23,7 +23,6 @@ export default function Header() {
 
   useEffect(() => {
     setOpen(false);
-    setSub(null);
   }, [pathname]);
 
   if (pathname === "/") return null; // home page uses the hero navbar
@@ -103,58 +102,11 @@ export default function Header() {
                 {CTA.label} <ArrowRight size={16} />
               </Link>
             )}
-            <button
-              className="rounded-lg p-2 text-[#1a2a80] hover:bg-[#f6f8fb] xl:hidden"
-              aria-label="Menu"
-              aria-expanded={open}
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <X size={26} /> : <Menu size={26} />}
-            </button>
+            <MenuButton open={open} onClick={() => setOpen(!open)} />
           </div>
         </nav>
 
-        {/* Mobile / tablet panel */}
-        {open && (
-          <div className="mx-auto mt-2 max-h-[75vh] max-w-6xl overflow-auto rounded-2xl border border-[#e2e7ef] bg-white p-3 shadow-2xl xl:hidden">
-            {ITEMS.map((item) => (
-              <div key={item.label} className="border-b border-[#f0f2f7] last:border-0">
-                <div className="flex items-center">
-                  <Link
-                    href={item.href}
-                    onClick={close}
-                    className={`flex-1 rounded-lg px-3 py-3 font-medium ${isActive(item) ? "text-[#1a2a80]" : "text-[#1c2430]"}`}
-                  >
-                    {item.label}
-                  </Link>
-                  {item.children && (
-                    <button
-                      aria-label={`Toggle ${item.label}`}
-                      className="p-3 text-[#5b6675]"
-                      onClick={() => setSub(sub === item.label ? null : item.label)}
-                    >
-                      <ChevronDown size={18} className={`transition-transform ${sub === item.label ? "rotate-180" : ""}`} />
-                    </button>
-                  )}
-                </div>
-                {item.children && sub === item.label && (
-                  <div className="mb-2 ml-3 border-l-2 border-[#f7b800] pl-3">
-                    {item.children.map((c) => (
-                      <Link key={c.href} href={c.href} onClick={close} className="block rounded-lg px-3 py-2 text-sm text-[#5b6675] hover:bg-[#f6f8fb] hover:text-[#1a2a80]">
-                        {c.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            {CTA && (
-              <Link href={CTA.href} onClick={close} className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#f7b800] py-3 font-semibold text-[#1a2a80]">
-                {CTA.label} <ArrowRight size={16} />
-              </Link>
-            )}
-          </div>
-        )}
+        <MobileMenu open={open} onClose={close} />
       </div>
     </header>
   );

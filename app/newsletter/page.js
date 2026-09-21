@@ -18,7 +18,7 @@ export default function Newsletter() {
 
       <Section>
         <SectionTitle eyebrow="Read & download" title="Latest issues" />
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="grid gap-10 lg:grid-cols-2">
           {ISSUES.map((it, i) => (
             <Reveal key={it.id} delay={i * 120}>
               <div id={it.id} className="scroll-mt-28 flex flex-col gap-6 overflow-hidden rounded-2xl border border-[#e2e7ef] bg-white p-6 shadow-sm transition hover:shadow-xl sm:flex-row">
