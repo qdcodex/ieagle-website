@@ -93,6 +93,12 @@ export default function Footer() {
       <div className="border-t border-white/10 bg-black/20">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-5 text-sm text-white/60">
           <span>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</span>
+          <span className="inline-flex items-center gap-2">
+            Digital Partner:
+            <a href={SITE.partner.url} target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/20 bg-white/10 px-3 py-1 font-semibold text-[#f7b800] transition hover:bg-[#f7b800] hover:text-[#1a2a80]">
+              {SITE.partner.name}
+            </a>
+          </span>
           <a href="#top" className="inline-flex items-center gap-1 hover:text-[#f7b800]">
             Back to top <ArrowUp size={14} />
           </a>
