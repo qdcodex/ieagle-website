@@ -130,3 +130,8 @@ form.stack{display:grid;gap:12px}
 
 /* hide floating widgets while the mobile menu is open */
 .menu-open .wa-float,.menu-open .chat-fab,.menu-open .chat,.menu-open .social-float{display:none!important}
+
+/* home scroll marquee: outlined words that light up at the centre */
+.mq-word{color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.45);transition:color .4s ease,-webkit-text-stroke-color .4s ease,text-shadow .4s ease}
+.mq-word.on{color:#f7b800;-webkit-text-stroke-color:#f7b800;text-shadow:0 0 36px rgba(247,184,0,.45)}
+@media(prefers-reduced-motion:reduce){.mq-word{color:#fff;-webkit-text-stroke:0}}

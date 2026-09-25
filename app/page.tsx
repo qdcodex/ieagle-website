@@ -6,6 +6,7 @@ import {
 import Hero from "@/components/hero/Hero";
 import Reveal from "@/components/home/Reveal";
 import Counter from "@/components/home/Counter";
+import ScrollMarquee from "@/components/home/ScrollMarquee";
 import ChapterMap from "@/components/ChapterMap";
 import MembershipTiers from "@/components/MembershipTiers";
 import WhyJoin from "@/components/WhyJoin";
@@ -50,6 +51,11 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Headline marquee */}
+      <div className="mt-20">
+        <ScrollMarquee />
+      </div>
 
       {/* Welcome */}
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-24 lg:grid-cols-2">
