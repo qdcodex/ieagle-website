@@ -38,23 +38,27 @@ export default function Home() {
     <>
       <Hero />
 
-      {/* Stats */}
-      <section className="relative z-10 mx-auto -mt-14 max-w-6xl px-6">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl shadow-2xl md:grid-cols-4" style={{ background: "linear-gradient(135deg,#1a2a80,#2c3fa8)" }}>
-          {STATS.map((s) => (
-            <div key={s.label} className="px-4 py-8 text-center text-white">
-              <div className="text-4xl font-semibold tracking-tight text-gold md:text-5xl">
-                <Counter to={s.to} />
+      {/* Stats card bridges the hero and the marquee: one continuous navy zone */}
+      <div className="relative" style={{ background: "linear-gradient(180deg,#203088 0%,#1a2a80 30%,#15226c 70%,#1d2c8c 100%)" }}>
+        <section className="relative z-10 mx-auto -mt-14 max-w-6xl px-6">
+          <div className="grid grid-cols-2 overflow-hidden rounded-2xl bg-white shadow-[0_24px_60px_-12px_rgba(0,0,0,.45)] ring-1 ring-white/60 md:grid-cols-4">
+            {STATS.map((s, i) => (
+              <div
+                key={s.label}
+                className={`relative px-4 py-7 text-center ${i % 2 ? "" : "border-r border-[#e2e7ef]"} ${i < 2 ? "border-b border-[#e2e7ef] md:border-b-0" : ""} ${i === 1 ? "md:border-r" : ""}`}
+              >
+                <div className="text-4xl font-semibold tracking-tight text-navy md:text-5xl">
+                  <Counter to={s.to} />
+                </div>
+                <div className="mx-auto mt-2 h-0.5 w-8 rounded bg-gold" />
+                <div className="mt-2 text-xs font-semibold uppercase tracking-widest text-[#5b6675] md:text-[13px]">{s.label}</div>
               </div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-white/80 md:text-sm">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* Headline marquee */}
-      <div className="mt-20">
-        <ScrollMarquee />
+        {/* Headline marquee */}
+        <ScrollMarquee bare />
       </div>
 
       {/* Welcome */}

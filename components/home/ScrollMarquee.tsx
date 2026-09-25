@@ -6,7 +6,7 @@ import { HOME, BRAND } from "@/lib/content";
  * Two bands of text that slide horizontally as the page scrolls (plus a slow drift).
  * The phrase passing the centre of the screen lights up.
  */
-export default function ScrollMarquee() {
+export default function ScrollMarquee({ bare = false }: { bare?: boolean }) {
   const section = useRef<HTMLElement>(null);
   const row1 = useRef<HTMLDivElement>(null);
   const row2 = useRef<HTMLDivElement>(null);
@@ -62,8 +62,8 @@ export default function ScrollMarquee() {
     <section
       ref={section}
       aria-label={HOME.headline.join(" ")}
-      className="relative overflow-hidden py-16 md:py-24"
-      style={{ background: "linear-gradient(160deg,#0f1a55 0%,#1a2a80 55%,#2c3fa8 100%)" }}
+      className={`relative overflow-hidden ${bare ? "pb-16 pt-20 md:pb-24 md:pt-20" : "py-16 md:py-24"}`}
+      style={bare ? undefined : { background: "linear-gradient(160deg,#0f1a55 0%,#1a2a80 55%,#2c3fa8 100%)" }}
     >
       <div className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px)", backgroundSize: "26px 26px" }} />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7b800]/15 blur-3xl" />
