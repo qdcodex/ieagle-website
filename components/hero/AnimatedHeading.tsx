@@ -28,7 +28,7 @@ export default function AnimatedHeading({
   const lines = text.split("\n");
 
   return (
-    <h1 className={className} style={{ letterSpacing: "-0.04em" }} aria-label={text.replace("\n", " ")}>
+    <h1 className={className} style={{ letterSpacing: "-0.04em" }} aria-label={text.split("\n").join(" ")}>
       {lines.map((line, lineIndex) => (
         <span key={lineIndex} className={`block ${lineClassNames[lineIndex] ?? ""}`} aria-hidden="true">
           {(() => {

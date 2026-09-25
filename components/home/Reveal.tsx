@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
-export default function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
+export default function Reveal({ children, delay = 0, className = "", style }: { children: ReactNode; delay?: number; className?: string; style?: CSSProperties }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -22,7 +22,7 @@ export default function Reveal({ children, delay = 0, className = "" }: { childr
   }, []);
 
   return (
-    <div ref={ref} className={`reveal ${shown ? "in" : ""} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+    <div ref={ref} className={`reveal ${shown ? "in" : ""} ${className}`} style={{ ...style, transitionDelay: `${delay}ms` }}>
       {children}
     </div>
   );

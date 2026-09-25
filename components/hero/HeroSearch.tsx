@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { CATEGORIES, STATES } from "@/lib/data";
+import { INDUSTRIES, CHAPTERS } from "@/lib/data";
 
 const field =
   "w-full min-w-0 rounded-lg border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/60 focus:border-white/40 [&>option]:text-black";
@@ -10,14 +10,14 @@ const field =
 export default function HeroSearch() {
   const router = useRouter();
   const [q, setQ] = useState("");
-  const [state, setState] = useState("");
+  const [chapter, setChapter] = useState("");
   const [category, setCategory] = useState("");
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const p = new URLSearchParams();
     if (q) p.set("q", q);
-    if (state) p.set("state", state);
+    if (chapter) p.set("chapter", chapter);
     if (category) p.set("category", category);
     router.push(`/business-directory${p.size ? `?${p}` : ""}`);
   }
@@ -30,15 +30,15 @@ export default function HeroSearch() {
       aria-label="Find a business"
     >
       <input className={field} placeholder="Search company or service" value={q} onChange={(e) => setQ(e.target.value)} />
-      <select className={field} value={state} onChange={(e) => setState(e.target.value)} aria-label="State">
-        <option value="">All states</option>
-        {Object.keys(STATES).map((s) => (
-          <option key={s}>{s}</option>
+      <select className={field} value={chapter} onChange={(e) => setChapter(e.target.value)} aria-label="Chapter">
+        <option value="">All chapters</option>
+        {CHAPTERS.map((c) => (
+          <option key={c.slug}>{c.name}</option>
         ))}
       </select>
       <select className={field} value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Category">
         <option value="">All categories</option>
-        {CATEGORIES.map((c) => (
+        {INDUSTRIES.map((c) => (
           <option key={c}>{c}</option>
         ))}
       </select>

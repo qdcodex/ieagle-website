@@ -1,4 +1,6 @@
 @tailwind base;
+/* Tailwind preflight is off; keep its border reset so border-* utilities render */
+@layer base{*,::before,::after{border-width:0;border-style:solid;border-color:#e2e7ef}}
 @tailwind components;
 @tailwind utilities;
 

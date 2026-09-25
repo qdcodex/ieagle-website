@@ -3,13 +3,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
-  Menu, X, ChevronDown, Home, Info, CalendarDays, UserCircle, MapPinned, Newspaper, Phone, Store, ArrowRight, MessageCircle,
+  Menu, X, ChevronDown, Home, Info, CalendarDays, UserCircle, MapPinned, BookOpen, Phone, Store, ArrowRight, MessageCircle, GraduationCap, LogIn,
 } from "lucide-react";
 import { NAV, SITE } from "@/lib/data";
 
 const ICONS: Record<string, typeof Home> = {
-  Home, "About us": Info, Events: CalendarDays, "Member Log in": UserCircle,
-  Directory: MapPinned, Newsletter: Newspaper, "Contact us": Phone, "Business Directory": Store,
+  Home, "About us": Info, Programs: GraduationCap, Membership: UserCircle, Chapters: MapPinned,
+  Events: CalendarDays, Magazine: BookOpen, "Contact us": Phone, "Business Directory": Store,
 };
 
 export function MenuButton({ open, onClick }: { open: boolean; onClick: () => void }) {
@@ -100,6 +100,9 @@ export default function MobileMenu({ open, onClose }: { open: boolean; onClose: 
         </div>
 
         <div className="mt-3 grid gap-2 border-t border-white/10 pt-3">
+          <Link href="/member-login" onClick={onClose} className="flex items-center justify-center gap-2 rounded-xl bg-white/10 py-3.5 font-semibold text-white ring-1 ring-white/20">
+            <LogIn size={18} /> Member Log in
+          </Link>
           {cta && (
             <Link href={cta.href} onClick={onClose} className="flex items-center justify-center gap-2 rounded-xl bg-[#f7b800] py-3.5 font-semibold text-[#1a2a80]">
               <Store size={18} /> {cta.label}

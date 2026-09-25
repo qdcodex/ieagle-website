@@ -54,7 +54,7 @@ export default function MemberLoginPanel() {
           <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px)", backgroundSize: "24px 24px" }} />
           <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-[#f7b800]/25 blur-3xl" />
           <div className="relative">
-            <img src="/logo.png" alt="iEagle" className="mb-8 h-20 w-auto" />
+            <img src="/logo.png" alt="iEagles" className="mb-8 h-20 w-auto" />
             <h2 className="mb-3 !text-3xl !text-white" style={{ letterSpacing: "-0.03em" }}>Welcome back to the network</h2>
             <p className="mb-8 text-white/75">Sign in to manage your profile, connect with members and stay updated.</p>
             <ul className="m-0 list-none space-y-4 p-0">

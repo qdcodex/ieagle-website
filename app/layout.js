@@ -6,8 +6,9 @@ import ChatBot from "@/components/ChatBot";
 import { SITE } from "@/lib/data";
 
 export const metadata = {
-  title: `${SITE.name} — ${SITE.tagline}`,
-  description: "Community service organisation: events, members, directory, newsletters and business directory.",
+  title: `${SITE.fullName} — ${SITE.tagline}`,
+  description:
+    "iEagles Business Network — a dynamic business community bringing entrepreneurs, business owners, professionals and emerging leaders together to connect, collaborate, learn and grow. Connect • Grow • Serve • Transform.",
 };
 
 export default function RootLayout({ children }) {
@@ -18,7 +19,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </head>
-      <body>
+      <body id="top">
         <Header />
         <main>{children}</main>
         <Footer />

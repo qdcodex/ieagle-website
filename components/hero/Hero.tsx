@@ -6,6 +6,7 @@ import HeroNav from "./HeroNav";
 import HeroSearch from "./HeroSearch";
 import NetworkCard from "./NetworkCard";
 import { SITE } from "@/lib/data";
+import { BRAND, HOME } from "@/lib/content";
 
 export default function Hero() {
   return (
@@ -25,43 +26,42 @@ export default function Hero() {
               <FadeIn delay={100} duration={800}>
                 <span className="liquid-glass mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1.5 text-sm">
                   <Sparkles size={14} className="text-[#f7b800]" />
-                  A business network across states &amp; districts
+                  {BRAND.name} · {BRAND.tagline}
                 </span>
               </FadeIn>
 
               <AnimatedHeading
-                text={"Grow your business\nthrough the right network."}
-                className="hero-shadow mb-4 text-4xl font-normal text-white md:text-5xl lg:text-6xl xl:text-7xl"
-                lineClassNames={["", "text-[#f7b800]"]}
+                text={HOME.headline.join("\n")}
+                className="hero-shadow mb-5 text-4xl font-normal leading-[1.05] text-white md:text-5xl xl:text-6xl"
+                lineClassNames={["", "text-[#f7b800]", "", "text-[#f7b800]"]}
+                charDelay={22}
               />
 
-              <FadeIn delay={800} duration={1000}>
-                <p className="hero-shadow mb-6 max-w-xl text-base text-gray-200 md:text-lg">
-                  Meet trusted business owners, find partners and get discovered — through chapters, events and a directory built for you.
-                </p>
+              <FadeIn delay={900} duration={1000}>
+                <p className="hero-shadow mb-6 max-w-xl text-base text-gray-200 md:text-lg">{HOME.welcome}</p>
               </FadeIn>
 
-              <FadeIn delay={1000} duration={1000}>
-                <HeroSearch />
-              </FadeIn>
-
-              <FadeIn delay={1200} duration={1000}>
-                <div className="flex flex-wrap gap-4">
-                  <Link href="/member-login" className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-medium text-black">
-                    Join the Network <ArrowRight size={18} />
+              <FadeIn delay={1100} duration={1000}>
+                <div className="mb-5 flex flex-wrap gap-4">
+                  <Link href="/membership#apply" className="inline-flex items-center gap-2 rounded-lg bg-[#f7b800] px-8 py-3 font-semibold text-[#1a2a80] transition hover:-translate-y-0.5">
+                    Become a Member <ArrowRight size={18} />
                   </Link>
                   <Link
-                    href="/business-directory"
+                    href="/about"
                     className="liquid-glass rounded-lg border border-white/20 px-8 py-3 font-medium text-white transition-colors hover:bg-white hover:text-black"
                   >
-                    Explore Directory
+                    Explore iEagles
                   </Link>
                 </div>
+              </FadeIn>
+
+              <FadeIn delay={1300} duration={1000}>
+                <HeroSearch />
               </FadeIn>
             </div>
 
             <div className="mt-10 flex justify-start lg:mt-0 lg:justify-end">
-              <FadeIn delay={1400} duration={1000} className="w-full max-w-md">
+              <FadeIn delay={1500} duration={1000} className="w-full max-w-md">
                 <NetworkCard />
               </FadeIn>
             </div>
