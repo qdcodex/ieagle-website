@@ -5,13 +5,27 @@ import AnimatedHeading from "./AnimatedHeading";
 import HeroNav from "./HeroNav";
 import HeroSearch from "./HeroSearch";
 import NetworkCard from "./NetworkCard";
+import Hero3D from "./Hero3D";
 import { SITE } from "@/lib/data";
 import { BRAND, HOME } from "@/lib/content";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-black text-white font-sans">
-      {SITE.heroImage ? (
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#0b1440] text-white font-sans">
+      {SITE.hero3d ? (
+        <>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 50% 60% at 75% 42%, rgba(44,63,168,.9) 0%, rgba(26,42,128,.55) 40%, transparent 70%), radial-gradient(circle at 75% 43%, rgba(247,184,0,.18) 0%, transparent 32%), linear-gradient(180deg,#0a1238 0%,#121d5c 55%,#203088 100%)",
+            }}
+          />
+          <Hero3D />
+          {/* keep text readable over the scene */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a1238]/80 via-[#0a1238]/25 to-transparent lg:via-transparent" />
+        </>
+      ) : SITE.heroImage ? (
         <img className="absolute inset-0 h-full w-full object-cover" src={SITE.heroImage} alt="" />
       ) : (
         <video className="absolute inset-0 h-full w-full object-cover" src={SITE.heroVideo} autoPlay loop muted playsInline />
@@ -61,7 +75,7 @@ export default function Hero() {
             </div>
 
             <div className="mt-10 flex justify-start lg:mt-0 lg:justify-end">
-              <FadeIn delay={1500} duration={1000} className="w-full max-w-md">
+              <FadeIn delay={1500} duration={1000} className="w-full max-w-xs">
                 <NetworkCard />
               </FadeIn>
             </div>
