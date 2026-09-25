@@ -65,7 +65,16 @@ export default function ScrollMarquee({ bare = false }: { bare?: boolean }) {
       className={`relative overflow-hidden ${bare ? "pb-16 pt-20 md:pb-24 md:pt-20" : "py-16 md:py-24"}`}
       style={bare ? undefined : { background: "linear-gradient(160deg,#0f1a55 0%,#1a2a80 55%,#2c3fa8 100%)" }}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px)", backgroundSize: "26px 26px" }} />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1.5px,transparent 1.5px)",
+          backgroundSize: "26px 26px",
+          // fade the dot pattern in so there is no hard edge where the section starts
+          maskImage: "linear-gradient(to bottom, transparent, #000 160px)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 160px)",
+        }}
+      />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f7b800]/15 blur-3xl" />
 
       {/* main row: the four headline phrases */}

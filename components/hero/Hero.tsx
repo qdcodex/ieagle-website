@@ -24,6 +24,8 @@ export default function Hero() {
           <Hero3D />
           {/* keep text readable over the scene */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a1238]/80 via-[#0a1238]/25 to-transparent lg:via-transparent" />
+          {/* blend the bottom edge into the next section's starting colour (#203088) */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent via-[#203088]/70 to-[#203088]" />
         </>
       ) : SITE.heroImage ? (
         <img className="absolute inset-0 h-full w-full object-cover" src={SITE.heroImage} alt="" />
