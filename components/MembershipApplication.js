@@ -1,0 +1,210 @@
+"use client";
+import { useEffect, useState } from "react";
+import { Send, Mail, Printer, RefreshCw, CheckCircle2 } from "lucide-react";
+import { SITE } from "@/lib/data";
+import { MEMBERSHIP } from "@/lib/content";
+
+// Form layout mirrors the printed iEagles membership application.
+const SECTIONS = [
+  {
+    title: "Membership Details",
+    fields: [
+      { k: "name", label: "Name", required: true, autoComplete: "name" },
+      { k: "category", label: "Category", required: true, type: "select" },
+      { k: "company", label: "Company Name", required: true, autoComplete: "organization" },
+      { k: "designation", label: "Designation", autoComplete: "organization-title" },
+      {
+        k: "gst",
+        label: "GST",
+        placeholder: "Optional — 15 character GSTIN",
+        pattern: "[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z][0-9A-Za-z]Z[0-9A-Za-z]",
+        title: "Enter a valid 15-character GSTIN, e.g. 33ABCDE1234F1Z5",
+        upper: true,
+      },
+    ],
+  },
+  {
+    title: "Communication Address",
+    fields: [
+      { k: "address", label: "Address", required: true, autoComplete: "street-address" },
+      {
+        k: "district",
+        label: "District with Pin",
+        required: true,
+        placeholder: "e.g. Kanyakumari – 629001",
+        pattern: ".*\\b[0-9]{6}\\b.*",
+        title: "Include the district name and the 6-digit PIN code",
+      },
+      { k: "contact", label: "Contact", required: true, type: "tel", autoComplete: "tel", pattern: "(\\+?91 ?)?[6-9][0-9]{4} ?[0-9]{5}", title: "Enter a 10-digit mobile number, e.g. 98765 43210" },
+      { k: "email", label: "E-Mail Id", required: true, type: "email", autoComplete: "email" },
+    ],
+  },
+  {
+    title: "Business Details",
+    fields: [
+      { k: "products", label: "Products/Services", required: true, type: "textarea" },
+      { k: "audience", label: "Targeted Audiences", type: "textarea" },
+    ],
+  },
+];
+
+const ALL = SECTIONS.flatMap((s) => s.fields);
+const blank = Object.fromEntries(ALL.map((f) => [f.k, ""]));
+
+const pad = (n) => String(n).padStart(2, "0");
+function newApplication() {
+  const d = new Date();
+  const rand = String(Math.floor(Math.random() * 9000) + 1000);
+  return {
+    no: `IEBN-${String(d.getFullYear()).slice(2)}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${rand}`,
+    date: `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`,
+  };
+}
+
+const cell = "flex min-h-[46px] rounded-xl border border-[#1a2a80]/25 bg-white focus-within:border-[#1a2a80] focus-within:ring-4 focus-within:ring-[#1a2a80]/10";
+// Label cell: full-width strip on phones, fixed-width grey column (as on the paper form) from sm up
+const label =
+  "flex w-full shrink-0 items-center rounded-t-xl border-b border-[#1a2a80]/20 bg-[#e8ebf3] px-4 py-2 text-sm font-semibold text-[#1a2a80] sm:w-48 sm:self-stretch sm:rounded-l-xl sm:rounded-tr-none sm:border-b-0 sm:border-r";
+const control = "w-full min-w-0 flex-1 border-0 bg-transparent px-4 py-2.5 text-[#1c2430] outline-none";
+
+export default function MembershipApplication() {
+  const [app, setApp] = useState({ no: "", date: "" });
+  const [f, setF] = useState(blank);
+  const [done, setDone] = useState("");
+
+  useEffect(() => {
+    setApp(newApplication());
+    const c = new URLSearchParams(window.location.search).get("category");
+    if (MEMBERSHIP.categories.some((x) => x.t === c)) setF((p) => ({ ...p, category: c }));
+  }, []);
+
+  const set = (field) => (e) => {
+    const v = field.upper ? e.target.value.toUpperCase() : e.target.value;
+    setF((p) => ({ ...p, [field.k]: v }));
+  };
+
+  const summary = () =>
+    [
+      "*iEagles Business Network — Membership Application*",
+      `Application No.: ${app.no}`,
+      `Date: ${app.date}`,
+      ...SECTIONS.flatMap((s) => ["", `*${s.title}*`, ...s.fields.map((x) => `${x.label}: ${f[x.k] || "—"}`)]),
+    ].join("\n");
+
+  function submit(e) {
+    e.preventDefault();
+    window.open(`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(summary())}`, "_blank", "noopener");
+    setDone("whatsapp");
+  }
+
+  function email(e) {
+    const form = e.currentTarget.form;
+    if (!form.reportValidity()) return;
+    const subject = `Membership Application ${app.no} — ${f.name}`;
+    window.location.href = `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summary().replace(/\*/g, ""))}`;
+    setDone("email");
+  }
+
+  function reset() {
+    setF(blank);
+    setApp(newApplication());
+    setDone("");
+  }
+
+  return (
+    <form onSubmit={submit} className="print-area overflow-hidden rounded-3xl border border-[#1a2a80]/15 bg-[#f4f6fb] shadow-2xl">
+      <div className="flex items-center justify-between gap-4 bg-[#1a2a80] px-6 py-3.5 text-white">
+        <h2 className="!text-lg !text-white">Kindly complete all the details</h2>
+        <img src="/logo.png" alt="iEagles" className="h-9 w-auto" />
+      </div>
+
+      {/* Application no. + date (automatic) */}
+      <div className="grid gap-3 px-6 py-5 sm:grid-cols-2">
+        <label className="flex items-center gap-3">
+          <span className="shrink-0 font-semibold text-[#1a2a80]">Application No.</span>
+          <input readOnly value={app.no} aria-label="Application number" className="w-full min-w-0 rounded-xl border border-[#1a2a80]/25 bg-[#e8ebf3] px-4 py-2.5 font-mono font-semibold tracking-wide text-[#1a2a80] outline-none" />
+        </label>
+        <label className="flex items-center gap-3 sm:justify-end">
+          <span className="shrink-0 font-semibold text-[#1a2a80]">Date</span>
+          <input readOnly value={app.date} aria-label="Application date" className="w-full min-w-0 rounded-xl border border-[#1a2a80]/25 bg-[#e8ebf3] px-4 py-2.5 font-semibold text-[#1a2a80] outline-none sm:w-44" />
+        </label>
+      </div>
+
+      {SECTIONS.map((s) => (
+        <fieldset key={s.title} className="m-0 border-0 p-0">
+          <legend className="w-full bg-[#1a2a80] px-6 py-2.5 font-semibold text-white">
+            <span className="mr-2 inline-block h-2 w-2 rounded-full bg-[#f7b800] align-middle" />
+            {s.title}
+          </legend>
+          <div className="grid gap-3 px-6 py-5">
+            {s.fields.map((x) => {
+              const id = `app-${x.k}`;
+              const common = {
+                id,
+                name: x.k,
+                value: f[x.k],
+                onChange: set(x),
+                required: x.required,
+                autoComplete: x.autoComplete,
+                placeholder: x.placeholder,
+                pattern: x.pattern,
+                title: x.title,
+              };
+              return (
+                <div key={x.k} className={`${cell} flex-col sm:flex-row ${x.type === "textarea" ? "" : "sm:items-center"}`}>
+                  <label htmlFor={id} className={label}>
+                    {x.label}
+                    {x.required && <span className="ml-1 text-[#c2410c]">*</span>}
+                  </label>
+                  {x.type === "select" ? (
+                    <select {...common} className={`${control} cursor-pointer`} style={{ minWidth: 0 }}>
+                      <option value="">Select membership category</option>
+                      {MEMBERSHIP.categories.map((c) => (
+                        <option key={c.t} value={c.t}>
+                          {c.t} — {c.d}
+                        </option>
+                      ))}
+                    </select>
+                  ) : x.type === "textarea" ? (
+                    <textarea {...common} rows={3} className={`${control} resize-y`} style={{ minWidth: 0 }} />
+                  ) : (
+                    <input {...common} type={x.type ?? "text"} inputMode={x.type === "tel" ? "tel" : undefined} className={control} style={{ minWidth: 0 }} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </fieldset>
+      ))}
+
+      <div className="no-print flex flex-col gap-4 border-t border-[#1a2a80]/10 bg-white px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-[#5b6675]">
+          <span className="text-[#c2410c]">*</span> Required. Your application is sent to the iEagles team on WhatsApp.
+        </p>
+        <div className="flex flex-wrap gap-2.5">
+          <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl border border-[#1a2a80]/25 bg-white px-4 py-3 text-sm font-semibold text-[#1a2a80] hover:bg-[#f4f6fb]">
+            <Printer size={16} /> Print / PDF
+          </button>
+          <button type="button" onClick={email} className="inline-flex items-center gap-2 rounded-xl border border-[#1a2a80]/25 bg-white px-4 py-3 text-sm font-semibold text-[#1a2a80] hover:bg-[#f4f6fb]">
+            <Mail size={16} /> Email
+          </button>
+          <button type="submit" className="inline-flex items-center gap-2 rounded-xl border-0 bg-[#1a2a80] px-6 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#2c3fa8]">
+            <Send size={18} /> Submit Application
+          </button>
+        </div>
+      </div>
+
+      {done && (
+        <div className="no-print flex flex-col gap-3 border-t border-[#1a2a80]/10 bg-[#ecfdf3] px-6 py-4 text-[#14532d] sm:flex-row sm:items-center sm:justify-between" role="status">
+          <span className="flex items-center gap-2 font-medium">
+            <CheckCircle2 size={18} />
+            Application {app.no} {done === "email" ? "opened in your email app" : "opened in WhatsApp"} — please press send there to complete it.
+          </span>
+          <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 border-0 bg-transparent text-sm font-semibold text-[#14532d] underline">
+            <RefreshCw size={14} /> Start a new application
+          </button>
+        </div>
+      )}
+    </form>
+  );
+}

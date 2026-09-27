@@ -9,7 +9,7 @@ import { Section, Heading, IconCard } from "@/components/blocks";
 import MembershipTiers from "@/components/MembershipTiers";
 import WhyJoin from "@/components/WhyJoin";
 import Testimonials from "@/components/Testimonials";
-import EnquiryForm from "@/components/EnquiryForm";
+import MembershipApplication from "@/components/MembershipApplication";
 import { MEMBERSHIP, BENEFITS, WHY_JOIN, TESTIMONIALS, HOME } from "@/lib/content";
 import { wa } from "@/lib/data";
 
@@ -87,37 +87,37 @@ export default function Membership() {
 
       {/* Apply */}
       <Section id="apply">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr]">
-          <Reveal>
-            <div className="relative h-full overflow-hidden rounded-3xl p-8 text-white md:p-10" style={{ background: "linear-gradient(160deg,#0f1a55,#1a2a80 55%,#2c3fa8)" }}>
-              <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-[#f7b800]/25 blur-3xl" />
-              <img src="/logo.png" alt="" className="relative mb-6 h-20 w-auto" />
-              <h2 className="relative !text-3xl !text-white">Apply for Membership</h2>
-              <p className="relative mt-3 text-lg text-white/80">{HOME.cta}</p>
-              <ul className="relative m-0 mt-6 list-none space-y-3 p-0">
-                {["Choose your membership category", "Pick your nearest chapter", "Our team will contact you on WhatsApp"].map((s, i) => (
-                  <li key={s} className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f7b800] text-sm font-bold text-[#1a2a80]">{i + 1}</span>
-                    {s}
+        <Heading center eyebrow="Apply for Membership" title="Membership Application" intro={HOME.cta} />
+        <div className="grid items-start gap-8 lg:grid-cols-[300px_1fr]">
+          <Reveal className="lg:sticky lg:top-32">
+            <div className="relative overflow-hidden rounded-3xl p-7 text-white" style={{ background: "linear-gradient(160deg,#0f1a55,#1a2a80 55%,#2c3fa8)" }}>
+              <div className="absolute -bottom-20 -right-20 h-56 w-56 rounded-full bg-[#f7b800]/25 blur-3xl" />
+              <img src="/logo.png" alt="" className="relative mb-5 h-16 w-auto" />
+              <h3 className="relative !text-xl !text-white">How it works</h3>
+              <ul className="relative m-0 mt-4 list-none space-y-3 p-0 text-sm">
+                {[
+                  "Your application number and date are filled in automatically",
+                  "Choose your membership category",
+                  "Fill in your company, address and business details",
+                  "Submit — our team will contact you on WhatsApp",
+                ].map((s, i) => (
+                  <li key={s} className="flex items-start gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f7b800] text-xs font-bold text-[#1a2a80]">{i + 1}</span>
+                    <span className="pt-1 text-white/85">{s}</span>
                   </li>
                 ))}
               </ul>
-              <div className="relative mt-8 flex flex-wrap gap-3">
-                <Link href="/member-login" className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 font-semibold ring-1 ring-white/20 hover:bg-white/20">
-                  <LogIn size={18} /> Member Log in
+              <div className="relative mt-7 flex flex-wrap gap-2">
+                <Link href="/member-login" className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold ring-1 ring-white/20 hover:bg-white/20">
+                  <LogIn size={16} /> Member Log in
                 </Link>
-                <a href={wa("I would like to become an iEagles member")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-[#25d366] px-5 py-3 font-semibold">
-                  <MessageCircle size={18} /> WhatsApp
+                <a href={wa("I have a question about iEagles membership")} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-[#25d366] px-4 py-2.5 text-sm font-semibold">
+                  <MessageCircle size={16} /> Ask us
                 </a>
               </div>
             </div>
           </Reveal>
-          <Reveal delay={120}>
-            <div className="h-full rounded-3xl border border-[#e2e7ef] bg-white p-8 shadow-xl md:p-10">
-              <h2 className="mb-6 !text-3xl">Become a Member</h2>
-              <EnquiryForm mode="membership" topics={["Membership Enquiry"]} submitLabel="Apply for Membership" />
-            </div>
-          </Reveal>
+          <MembershipApplication />
         </div>
       </Section>
     </>

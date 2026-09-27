@@ -135,3 +135,12 @@ form.stack{display:grid;gap:12px}
 .mq-word{color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.45);transition:color .4s ease,-webkit-text-stroke-color .4s ease,text-shadow .4s ease}
 .mq-word.on{color:#f7b800;-webkit-text-stroke-color:#f7b800;text-shadow:0 0 36px rgba(247,184,0,.45)}
 @media(prefers-reduced-motion:reduce){.mq-word{color:#fff;-webkit-text-stroke:0}}
+
+/* print only the membership application */
+@media print{
+  body *{visibility:hidden}
+  .print-area,.print-area *{visibility:visible}
+  .print-area{position:absolute;left:0;top:0;width:100%;box-shadow:none!important;border:0!important}
+  .print-area .no-print{display:none!important}
+  .print-area legend,.print-area>div:first-child{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

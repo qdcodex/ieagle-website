@@ -35,7 +35,7 @@ export default function MembershipTiers({ compact = false }) {
               <p className={`relative mt-2 flex-1 ${compact ? "text-sm" : "text-lg"} opacity-90`}>{c.d}</p>
               {!compact && (
                 <Link
-                  href={`/membership?topic=Membership%20Enquiry#apply`}
+                  href={`/membership?category=${encodeURIComponent(c.t)}#apply`}
                   className="relative mt-6 inline-flex items-center gap-2 self-start rounded-full bg-white/20 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:gap-3 hover:bg-white/30"
                   style={{ color: s.fg }}
                 >
