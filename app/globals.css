@@ -144,3 +144,10 @@ form.stack{display:grid;gap:12px}
   .print-area .no-print{display:none!important}
   .print-area legend,.print-area>div:first-child{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+/* printed chapter sheets: fit the width of the page */
+@media print{
+  .print-area .overflow-x-auto{overflow:visible!important}
+  .print-area table{min-width:0!important;font-size:10px}
+  .print-area input[type=number]{border:0!important;padding:0!important}
+}

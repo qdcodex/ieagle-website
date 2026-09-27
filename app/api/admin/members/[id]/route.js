@@ -2,10 +2,11 @@ import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/db";
 import { requireRole, json, publicUser, hashPassword, MEMBER_TYPES } from "@/lib/auth";
 import { tempPassword } from "@/lib/temppass";
+import { CHAPTERS } from "@/lib/data";
 
 export const runtime = "nodejs";
 
-// PATCH { status?, memberType?, name?, phone?, company?, category?, chapter?, resetPassword? }
+// PATCH { status?, memberType?, name?, phone?, company?, category?, chapter?, businessCategory?, joinedAt?, resetPassword? }
 export async function PATCH(req, { params }) {
   const [admin, err] = await requireRole("admin");
   if (err) return err;
@@ -27,8 +28,17 @@ export async function PATCH(req, { params }) {
     if (!MEMBER_TYPES[b.memberType]) return json({ error: "Invalid member type." }, 400);
     set.memberType = b.memberType;
   }
-  for (const k of ["name", "phone", "company", "category", "chapter"]) {
+  for (const k of ["name", "phone", "company", "category", "businessCategory"]) {
     if (typeof b[k] === "string") set[k] = b[k].trim().slice(0, 200);
+  }
+  if (typeof b.chapter === "string") {
+    if (b.chapter && !CHAPTERS.some((c) => c.name === b.chapter)) return json({ error: "Unknown chapter." }, 400);
+    set.chapter = b.chapter;
+  }
+  if (b.joinedAt !== undefined) {
+    const d = new Date(b.joinedAt);
+    if (Number.isNaN(d.getTime())) return json({ error: "Invalid date of joining." }, 400);
+    set.joinedAt = d;
   }
 
   let password;

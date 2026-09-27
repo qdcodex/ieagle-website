@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut, KeyRound, Store, CalendarDays, MapPinned, BookOpen, UserRound, Building2, Mail, Phone, BadgeCheck, Hash, ArrowRight } from "lucide-react";
 import { api, Modal, ChangePasswordForm, fmtDate } from "@/components/admin/ui";
+import MemberChapter from "@/components/MemberChapter";
 
 const LINKS = [
   { href: "/business-directory", icon: Store, t: "Business Directory", d: "Find and connect with member businesses" },
@@ -38,6 +39,7 @@ export default function MemberDashboard() {
     [Building2, "Company", me.company],
     [BadgeCheck, "Membership category", me.category],
     [MapPinned, "Chapter", me.chapter],
+    [BadgeCheck, "Business category", me.businessCategory],
     [Hash, "Application No.", me.applicationNo],
   ];
 
@@ -70,7 +72,9 @@ export default function MemberDashboard() {
           </div>
         )}
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr]">
+        <MemberChapter />
+
+        <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_1.3fr]">
           <section className="rounded-3xl border border-[#e2e7ef] bg-white p-6 shadow-sm">
             <h2 className="mb-4 !text-xl">My profile</h2>
             <dl className="grid gap-2">

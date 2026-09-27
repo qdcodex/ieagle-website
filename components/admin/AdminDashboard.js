@@ -3,8 +3,9 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  LogOut, KeyRound, ExternalLink, FileText, Users, ShieldCheck, UserPlus, Search, RefreshCw, CheckCircle2, MessageCircle, Inbox,
+  LogOut, KeyRound, ExternalLink, FileText, Users, ShieldCheck, UserPlus, Search, RefreshCw, CheckCircle2, MessageCircle, Inbox, Pencil, CalendarCheck,
 } from "lucide-react";
+import ChapterForms from "./ChapterForms";
 import { api, Modal, Field, Btn, ErrorNote, Badge, CopyText, inputCls, fmtDate, fmtDateTime, ChangePasswordForm } from "./ui";
 import { MEMBERSHIP } from "@/lib/content";
 import { CHAPTERS } from "@/lib/data";
@@ -303,10 +304,78 @@ function NewUserModal({ role, onClose, onCreated }) {
   );
 }
 
+function EditMemberModal({ user, onClose, onSaved }) {
+  const [cats, setCats] = useState([]);
+  const [f, setF] = useState({
+    name: user.name,
+    phone: user.phone,
+    company: user.company,
+    category: user.category,
+    chapter: user.chapter,
+    businessCategory: user.businessCategory,
+    joinedAt: user.joinedAt ? new Date(user.joinedAt).toISOString().slice(0, 10) : "",
+  });
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    api("/api/admin/categories").then((d) => setCats(d.categories)).catch(() => {});
+  }, []);
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    try {
+      const d = await api(`/api/admin/members/${user.id}`, { method: "PATCH", body: f });
+      onSaved(d.user);
+    } catch (e2) {
+      setErr(e2.message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title={`Edit ${user.name}`} onClose={onClose}>
+      <form onSubmit={submit} className="grid gap-4">
+        <Field label="Full name"><input className={inputCls} required value={f.name} onChange={set("name")} /></Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Mobile"><input className={inputCls} type="tel" value={f.phone} onChange={set("phone")} /></Field>
+          <Field label="Company"><input className={inputCls} value={f.company} onChange={set("company")} /></Field>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Chapter">
+            <select className={inputCls} value={f.chapter} onChange={set("chapter")}>
+              <option value="">— Not assigned —</option>
+              {CHAPTERS.map((c) => <option key={c.slug}>{c.name}</option>)}
+            </select>
+          </Field>
+          <Field label="Date of joining (DoJ)"><input className={inputCls} type="date" value={f.joinedAt} onChange={set("joinedAt")} /></Field>
+        </div>
+        <Field label="Business category (List of Category)">
+          <select className={inputCls} value={f.businessCategory} onChange={set("businessCategory")}>
+            <option value="">— None —</option>
+            {cats.map((c) => <option key={c.id}>{c.name}</option>)}
+          </select>
+        </Field>
+        <Field label="Membership category">
+          <select className={inputCls} value={f.category} onChange={set("category")}>
+            <option value="">—</option>
+            {MEMBERSHIP.categories.map((c) => <option key={c.t}>{c.t}</option>)}
+          </select>
+        </Field>
+        <ErrorNote>{err}</ErrorNote>
+        <Btn disabled={busy} type="submit">{busy ? "Saving…" : "Save changes"}</Btn>
+      </form>
+    </Modal>
+  );
+}
+
 function People({ role, meId, onCreated, refreshStats }) {
   const [list, setList] = useState(null);
   const [q, setQ] = useState("");
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState(null);
   const [err, setErr] = useState("");
 
   const load = useCallback(async () => {
@@ -356,7 +425,7 @@ function People({ role, meId, onCreated, refreshStats }) {
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead className="bg-[#f6f8fb] text-xs uppercase tracking-wider text-[#5b6675]">
               <tr>
-                {["Name", "Email", role === "member" ? "Member type" : "Role", "Company", "Status", "Last login", ""].map((h, i) => (
+                {["Name", "Email", role === "member" ? "Member type" : "Role", role === "member" ? "Chapter / Category" : "Company", "Status", "Last login", ""].map((h, i) => (
                   <th key={i} className="px-4 py-3 font-semibold">{h}</th>
                 ))}
               </tr>
@@ -375,10 +444,24 @@ function People({ role, meId, onCreated, refreshStats }) {
                       "Admin"
                     )}
                   </td>
-                  <td className="px-4 py-3">{u.company || "—"}</td>
+                  <td className="px-4 py-3">
+                    {role === "member" ? (
+                      <>
+                        <span className={u.chapter ? "font-medium" : "text-[#b45309]"}>{u.chapter || "No chapter"}</span>
+                        <span className="block text-xs text-[#5b6675]">{u.businessCategory || u.company || "—"}</span>
+                      </>
+                    ) : (
+                      u.company || "—"
+                    )}
+                  </td>
                   <td className="px-4 py-3"><Badge status={u.status} /></td>
                   <td className="px-4 py-3 text-[#5b6675]">{fmtDateTime(u.lastLoginAt)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-right">
+                    {role === "member" && (
+                      <button onClick={() => setEditing(u)} className="mr-1 inline-flex items-center gap-1 rounded-lg border-0 bg-[#f0f2f7] px-2.5 py-1.5 text-xs font-semibold text-[#1a2a80] hover:bg-[#e2e7ef]">
+                        <Pencil size={13} /> Edit
+                      </button>
+                    )}
                     <button onClick={() => patch(u, { resetPassword: true })} className="mr-1 inline-flex items-center gap-1 rounded-lg border-0 bg-[#f0f2f7] px-2.5 py-1.5 text-xs font-semibold text-[#1a2a80] hover:bg-[#e2e7ef]">
                       <KeyRound size={13} /> Reset password
                     </button>
@@ -396,6 +479,16 @@ function People({ role, meId, onCreated, refreshStats }) {
             </tbody>
           </table>
         </div>
+      )}
+      {editing && (
+        <EditMemberModal
+          user={editing}
+          onClose={() => setEditing(null)}
+          onSaved={(u) => {
+            setEditing(null);
+            setList((l) => l.map((x) => (x.id === u.id ? u : x)));
+          }}
+        />
       )}
       {adding && (
         <NewUserModal
@@ -448,6 +541,7 @@ export default function AdminDashboard() {
   const TABS = [
     { id: "applications", label: "Applications", icon: FileText, count: stats?.newApplications, countLabel: "new" },
     { id: "members", label: "Members", icon: Users, count: stats?.members },
+    { id: "meetings", label: "Chapter Meetings", icon: CalendarCheck },
     { id: "admins", label: "Admins", icon: ShieldCheck, count: stats?.admins },
   ];
 
@@ -493,7 +587,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <div className="mb-5 flex gap-1 overflow-x-auto rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-[#e2e7ef]" role="tablist">
+        <div className="no-print mb-5 flex gap-1 overflow-x-auto rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-[#e2e7ef]" role="tablist">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -510,6 +604,7 @@ export default function AdminDashboard() {
 
         {tab === "applications" && <Applications onCreated={setCreated} refreshStats={refreshStats} />}
         {tab === "members" && <People role="member" meId={me.id} onCreated={setCreated} refreshStats={refreshStats} />}
+        {tab === "meetings" && <ChapterForms />}
         {tab === "admins" && <People role="admin" meId={me.id} onCreated={setCreated} refreshStats={refreshStats} />}
       </main>
 

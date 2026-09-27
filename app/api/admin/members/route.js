@@ -47,6 +47,8 @@ export async function POST(req) {
     company: String(b.company || "").slice(0, 200),
     category: String(b.category || "").slice(0, 40),
     chapter: String(b.chapter || "").slice(0, 60),
+    businessCategory: String(b.businessCategory || "").slice(0, 120),
+    joinedAt: b.joinedAt && !Number.isNaN(new Date(b.joinedAt).getTime()) ? new Date(b.joinedAt) : new Date(),
     passwordHash: await hashPassword(password),
     mustChangePassword: true,
     status: "active",
