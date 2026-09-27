@@ -71,9 +71,17 @@ export default function MembershipApplication() {
   const [app, setApp] = useState({ no: "", date: "" });
   const [f, setF] = useState(blank);
   const [done, setDone] = useState("");
+  const [saved, setSaved] = useState(false); // stored in the iEagles database
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
 
   useEffect(() => {
     setApp(newApplication());
+    // Preview the next sequential number from the database (final number is assigned on submit)
+    fetch("/api/applications/next")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d?.applicationNo && setApp((a) => ({ ...a, no: d.applicationNo })))
+      .catch(() => {});
     // Preselect from ?category= if that category is open, else the only open one
     const open = MEMBERSHIP.categories.filter((x) => x.available);
     const c = new URLSearchParams(window.location.search).get("category");
@@ -86,18 +94,46 @@ export default function MembershipApplication() {
     setF((p) => ({ ...p, [field.k]: v }));
   };
 
-  const summary = () =>
+  const summary = (no = app.no) =>
     [
       "*iEagles Business Network — Membership Application*",
-      `Application No.: ${app.no}`,
+      `Application No.: ${no}`,
       `Date: ${app.date}`,
       ...SECTIONS.flatMap((s) => ["", `*${s.title}*`, ...s.fields.map((x) => `${x.label}: ${f[x.k] || "—"}`)]),
     ].join("\n");
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
-    window.open(`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(summary())}`, "_blank", "noopener");
+    if (saved || busy) return;
+    setErr("");
+    setBusy(true);
+    // Open the WhatsApp tab now (inside the click) so pop-up blockers allow it; fill it in after saving.
+    const tab = window.open("", "_blank");
+    let no = app.no;
+    try {
+      const r = await fetch("/api/applications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) });
+      const d = await r.json().catch(() => ({}));
+      if (r.status === 400) {
+        tab?.close();
+        setErr(d.error || "Please check the form.");
+        setBusy(false);
+        return;
+      }
+      if (r.ok && d.applicationNo) {
+        no = d.applicationNo;
+        setApp((a) => ({ ...a, no }));
+        setSaved(true);
+      }
+    } catch {
+      // database not reachable (e.g. hosted site without the local DB) — still send via WhatsApp
+    }
+    const url = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(summary(no))}`;
+    if (tab) {
+      tab.opener = null;
+      tab.location.href = url;
+    } else window.open(url, "_blank", "noopener");
     setDone("whatsapp");
+    setBusy(false);
   }
 
   function email(e) {
@@ -113,6 +149,12 @@ export default function MembershipApplication() {
     setF({ ...blank, category: open.length === 1 ? open[0].t : "" });
     setApp(newApplication());
     setDone("");
+    setSaved(false);
+    setErr("");
+    fetch("/api/applications/next")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => d?.applicationNo && setApp((a) => ({ ...a, no: d.applicationNo })))
+      .catch(() => {});
   }
 
   return (
@@ -193,17 +235,22 @@ export default function MembershipApplication() {
           <button type="button" onClick={email} className="inline-flex items-center gap-2 rounded-xl border border-[#1a2a80]/25 bg-white px-4 py-3 text-sm font-semibold text-[#1a2a80] hover:bg-[#f4f6fb]">
             <Mail size={16} /> Email
           </button>
-          <button type="submit" className="inline-flex items-center gap-2 rounded-xl border-0 bg-[#1a2a80] px-6 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#2c3fa8]">
-            <Send size={18} /> Submit Application
+          <button type="submit" disabled={busy || saved} className="inline-flex items-center gap-2 rounded-xl border-0 bg-[#1a2a80] px-6 py-3 font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#2c3fa8] disabled:opacity-60">
+            <Send size={18} /> {busy ? "Submitting…" : saved ? "Submitted" : "Submit Application"}
           </button>
         </div>
       </div>
 
+      {err && (
+        <p role="alert" className="no-print border-t border-[#1a2a80]/10 bg-[#fef2f2] px-6 py-3 text-sm text-[#991b1b]">{err}</p>
+      )}
       {done && (
         <div className="no-print flex flex-col gap-3 border-t border-[#1a2a80]/10 bg-[#ecfdf3] px-6 py-4 text-[#14532d] sm:flex-row sm:items-center sm:justify-between" role="status">
           <span className="flex items-center gap-2 font-medium">
             <CheckCircle2 size={18} />
-            Application {app.no} {done === "email" ? "opened in your email app" : "opened in WhatsApp"} — please press send there to complete it.
+            {saved
+              ? `Application ${app.no} received — we have saved it and opened WhatsApp so you can also send it to our team.`
+              : `Application ${app.no} ${done === "email" ? "opened in your email app" : "opened in WhatsApp"} — please press send there to complete it.`}
           </span>
           <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 border-0 bg-transparent text-sm font-semibold text-[#14532d] underline">
             <RefreshCw size={14} /> Start a new application

@@ -25,7 +25,7 @@ export default function Header() {
     setOpen(false);
   }, [pathname]);
 
-  if (pathname === "/") return null; // home page uses the hero navbar
+  if (pathname === "/" || pathname.startsWith("/admin")) return null; // home uses the hero navbar; admin has its own
 
   const close = () => setOpen(false);
   // Highlight one menu item: the section itself, else the first section that lists this page

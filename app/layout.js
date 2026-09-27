@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SocialFloat from "@/components/SocialFloat";
 import ChatBot from "@/components/ChatBot";
+import PublicOnly from "@/components/PublicOnly";
 import { SITE } from "@/lib/data";
 
 export const metadata = {
@@ -22,12 +23,14 @@ export default function RootLayout({ children }) {
       <body id="top">
         <Header />
         <main>{children}</main>
-        <Footer />
-        <SocialFloat />
-        <ChatBot />
-        <a className="wa-float" href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer">
-          WhatsApp
-        </a>
+        <PublicOnly>
+          <Footer />
+          <SocialFloat />
+          <ChatBot />
+          <a className="wa-float" href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener noreferrer">
+            WhatsApp
+          </a>
+        </PublicOnly>
       </body>
     </html>
   );

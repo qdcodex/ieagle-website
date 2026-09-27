@@ -5,10 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "create-admin": "node scripts/create-admin.mjs"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.10.0",
     "lucide-react": "^1.47.0",
+    "mongodb": "^6.21.0",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

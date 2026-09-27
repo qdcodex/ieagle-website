@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Crown, Landmark, Users, Mail, Lock, Eye, EyeOff, ShieldCheck, CalendarCheck, Store, Newspaper, ArrowRight, MessageCircle, LogIn } from "lucide-react";
 import { SITE } from "@/lib/data";
 
@@ -25,6 +26,38 @@ export default function MemberLoginPanel() {
   const [role, setRole] = useState("executive");
   const [show, setShow] = useState(false);
   const [msg, setMsg] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [signedIn, setSignedIn] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => d.user?.role === "member" && setSignedIn(d.user))
+      .catch(() => {});
+  }, []);
+
+  async function login(e) {
+    e.preventDefault();
+    setBusy(true);
+    setMsg("");
+    try {
+      const r = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, portal: "member", memberType: role }),
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Login failed.");
+      router.push(d.redirect || "/members");
+      router.refresh();
+    } catch (err) {
+      setMsg(err.message);
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     const sync = () => {
@@ -106,44 +139,44 @@ export default function MemberLoginPanel() {
           <form
             key={role}
             className="grid gap-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setMsg(`${active.label} login is not connected to a backend yet.`);
-            }}
+            onSubmit={login}
           >
+            {signedIn && (
+              <p className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#ecfdf3] px-4 py-3 text-sm text-[#14532d]">
+                Signed in as {signedIn.name}.
+                <Link href="/members" className="font-semibold underline">Go to your dashboard →</Link>
+              </p>
+            )}
             <label className="relative block">
               <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5b6675]" />
-              <input className={input} type="email" placeholder="Email address" required />
+              <input className={input} type="email" placeholder="Email address" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </label>
             <label className="relative block">
               <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5b6675]" />
-              <input className={input} type={show ? "text" : "password"} placeholder="Password" required />
+              <input className={input} type={show ? "text" : "password"} placeholder="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
               <button type="button" onClick={() => setShow(!show)} aria-label="Toggle password" className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5b6675]">
                 {show ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </label>
 
-            <div className="flex items-center justify-between text-sm">
-              <label className="inline-flex items-center gap-2 text-[#5b6675]">
-                <input type="checkbox" className="h-4 w-4 accent-[#1a2a80]" style={{ minWidth: 0 }} /> Remember me
-              </label>
+            <div className="flex items-center justify-end text-sm">
               <a className="font-semibold text-[#1a2a80] hover:underline" target="_blank" rel="noopener noreferrer" href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent("I forgot my member password")}`}>
                 Forgot password?
               </a>
             </div>
 
-            <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1a2a80] py-3.5 font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#2c3fa8]" type="submit">
-              <LogIn size={18} /> Log in
+            <button disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border-0 bg-[#1a2a80] py-3.5 font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#2c3fa8] disabled:opacity-60" type="submit">
+              <LogIn size={18} /> {busy ? "Signing in…" : "Log in"}
             </button>
-            {msg && <p className="rounded-lg bg-[#f7b800]/20 px-4 py-3 text-sm text-[#1a2a80]">{msg}</p>}
+            {msg && <p role="alert" className="rounded-lg bg-[#fef2f2] px-4 py-3 text-sm text-[#991b1b]">{msg}</p>}
           </form>
 
           <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-[#e2e7ef] pt-6 text-sm sm:flex-row sm:items-center">
             <span className="text-[#5b6675]">Not a member yet?</span>
             <div className="flex flex-wrap gap-4">
-              <a className="inline-flex items-center gap-1 font-semibold text-[#1a2a80]" target="_blank" rel="noopener noreferrer" href={`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent("I would like to become a member")}`}>
-                <MessageCircle size={16} /> Request membership
-              </a>
+              <Link className="inline-flex items-center gap-1 font-semibold text-[#1a2a80]" href="/membership#apply">
+                <MessageCircle size={16} /> Apply for membership
+              </Link>
               <Link className="inline-flex items-center gap-1 font-semibold text-[#1a2a80]" href="/business-directory">
                 Browse directory <ArrowRight size={16} />
               </Link>
