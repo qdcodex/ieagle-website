@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  LogOut, KeyRound, ExternalLink, FileText, Users, ShieldCheck, UserPlus, Search, RefreshCw, CheckCircle2, MessageCircle, Inbox, Pencil, CalendarCheck,
+  LogOut, KeyRound, ExternalLink, FileText, Users, ShieldCheck, UserPlus, Search, RefreshCw, CheckCircle2, MessageCircle, Inbox, Pencil, CalendarCheck, UserCog,
 } from "lucide-react";
 import ChapterForms from "./ChapterForms";
 import { api, Modal, Field, Btn, ErrorNote, Badge, CopyText, inputCls, fmtDate, fmtDateTime, ChangePasswordForm } from "./ui";
@@ -267,7 +267,7 @@ function NewUserModal({ role, onClose, onCreated }) {
   }
 
   return (
-    <Modal title={role === "admin" ? "Add admin" : "Add member"} onClose={onClose}>
+    <Modal title={role === "admin" ? "Add admin" : role === "director" ? "Add chapter director" : "Add member"} onClose={onClose}>
       <form onSubmit={submit} className="grid gap-4">
         <Field label="Full name"><input className={inputCls} required value={f.name} onChange={set("name")} /></Field>
         <Field label="Email (used to sign in)"><input className={inputCls} type="email" required value={f.email} onChange={set("email")} /></Field>
@@ -296,6 +296,14 @@ function NewUserModal({ role, onClose, onCreated }) {
             </Field>
           </>
         )}
+        {role === "director" && (
+          <Field label="Chapter (the director manages only this chapter)">
+            <select className={inputCls} required value={f.chapter} onChange={set("chapter")}>
+              <option value="">Choose a chapter</option>
+              {CHAPTERS.map((c) => <option key={c.slug}>{c.name}</option>)}
+            </select>
+          </Field>
+        )}
         <p className="text-sm text-[#5b6675]">A temporary password is generated and shown once after saving.</p>
         <ErrorNote>{err}</ErrorNote>
         <Btn disabled={busy} type="submit"><UserPlus size={16} /> {busy ? "Creating…" : "Create account"}</Btn>
@@ -304,7 +312,7 @@ function NewUserModal({ role, onClose, onCreated }) {
   );
 }
 
-function EditMemberModal({ user, onClose, onSaved }) {
+function EditMemberModal({ user, onClose, onSaved, limited = false }) {
   const [cats, setCats] = useState([]);
   const [f, setF] = useState({
     name: user.name,
@@ -327,7 +335,8 @@ function EditMemberModal({ user, onClose, onSaved }) {
     setBusy(true);
     setErr("");
     try {
-      const d = await api(`/api/admin/members/${user.id}`, { method: "PATCH", body: f });
+      const body = limited ? { businessCategory: f.businessCategory, joinedAt: f.joinedAt } : f;
+      const d = await api(`/api/admin/members/${user.id}`, { method: "PATCH", body });
       onSaved(d.user);
     } catch (e2) {
       setErr(e2.message);
@@ -338,18 +347,20 @@ function EditMemberModal({ user, onClose, onSaved }) {
   return (
     <Modal title={`Edit ${user.name}`} onClose={onClose}>
       <form onSubmit={submit} className="grid gap-4">
-        <Field label="Full name"><input className={inputCls} required value={f.name} onChange={set("name")} /></Field>
+        {!limited && <Field label="Full name"><input className={inputCls} required value={f.name} onChange={set("name")} /></Field>}
+        {!limited && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Mobile"><input className={inputCls} type="tel" value={f.phone} onChange={set("phone")} /></Field>
+            <Field label="Company"><input className={inputCls} value={f.company} onChange={set("company")} /></Field>
+          </div>
+        )}
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Mobile"><input className={inputCls} type="tel" value={f.phone} onChange={set("phone")} /></Field>
-          <Field label="Company"><input className={inputCls} value={f.company} onChange={set("company")} /></Field>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Chapter">
+          {!limited && <Field label="Chapter">
             <select className={inputCls} value={f.chapter} onChange={set("chapter")}>
               <option value="">— Not assigned —</option>
               {CHAPTERS.map((c) => <option key={c.slug}>{c.name}</option>)}
             </select>
-          </Field>
+          </Field>}
           <Field label="Date of joining (DoJ)"><input className={inputCls} type="date" value={f.joinedAt} onChange={set("joinedAt")} /></Field>
         </div>
         <Field label="Business category (List of Category)">
@@ -358,12 +369,14 @@ function EditMemberModal({ user, onClose, onSaved }) {
             {cats.map((c) => <option key={c.id}>{c.name}</option>)}
           </select>
         </Field>
-        <Field label="Membership category">
-          <select className={inputCls} value={f.category} onChange={set("category")}>
-            <option value="">—</option>
-            {MEMBERSHIP.categories.map((c) => <option key={c.t}>{c.t}</option>)}
-          </select>
-        </Field>
+        {!limited && (
+          <Field label="Membership category">
+            <select className={inputCls} value={f.category} onChange={set("category")}>
+              <option value="">—</option>
+              {MEMBERSHIP.categories.map((c) => <option key={c.t}>{c.t}</option>)}
+            </select>
+          </Field>
+        )}
         <ErrorNote>{err}</ErrorNote>
         <Btn disabled={busy} type="submit">{busy ? "Saving…" : "Save changes"}</Btn>
       </form>
@@ -371,7 +384,9 @@ function EditMemberModal({ user, onClose, onSaved }) {
   );
 }
 
-function People({ role, meId, onCreated, refreshStats }) {
+function People({ role, me, onCreated, refreshStats }) {
+  const meId = me.id;
+  const readOnly = me.role === "director"; // directors: view their chapter, edit category / DoJ only
   const [list, setList] = useState(null);
   const [q, setQ] = useState("");
   const [adding, setAdding] = useState(false);
@@ -411,7 +426,11 @@ function People({ role, meId, onCreated, refreshStats }) {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5b6675]" />
           <input className={`${inputCls} pl-9`} placeholder="Search name, email, company, chapter" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
-        <Btn variant="gold" onClick={() => setAdding(true)}><UserPlus size={16} /> {role === "admin" ? "Add admin" : "Add member"}</Btn>
+        {!readOnly && (
+          <Btn variant="gold" onClick={() => setAdding(true)}>
+            <UserPlus size={16} /> {role === "admin" ? "Add admin" : role === "director" ? "Add chapter director" : "Add member"}
+          </Btn>
+        )}
       </div>
       <ErrorNote>{err}</ErrorNote>
       {!list ? (
@@ -425,7 +444,7 @@ function People({ role, meId, onCreated, refreshStats }) {
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead className="bg-[#f6f8fb] text-xs uppercase tracking-wider text-[#5b6675]">
               <tr>
-                {["Name", "Email", role === "member" ? "Member type" : "Role", role === "member" ? "Chapter / Category" : "Company", "Status", "Last login", ""].map((h, i) => (
+                {["Name", "Email", role === "member" ? "Member type" : "Role", role === "admin" ? "Company" : role === "director" ? "Chapter" : "Chapter / Category", "Status", "Last login", ""].map((h, i) => (
                   <th key={i} className="px-4 py-3 font-semibold">{h}</th>
                 ))}
               </tr>
@@ -437,9 +456,15 @@ function People({ role, meId, onCreated, refreshStats }) {
                   <td className="px-4 py-3">{u.email}</td>
                   <td className="px-4 py-3">
                     {role === "member" ? (
-                      <select className="rounded-lg border border-[#d6dbe8] bg-white px-2 py-1 text-sm" value={u.memberType ?? ""} onChange={(e) => patch(u, { memberType: e.target.value })} aria-label="Member type">
-                        {Object.entries(MEMBER_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                      </select>
+                      readOnly ? (
+                        u.memberTypeLabel
+                      ) : (
+                        <select className="rounded-lg border border-[#d6dbe8] bg-white px-2 py-1 text-sm" value={u.memberType ?? ""} onChange={(e) => patch(u, { memberType: e.target.value })} aria-label="Member type">
+                          {Object.entries(MEMBER_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                        </select>
+                      )
+                    ) : role === "director" ? (
+                      "Chapter Director"
                     ) : (
                       "Admin"
                     )}
@@ -450,6 +475,8 @@ function People({ role, meId, onCreated, refreshStats }) {
                         <span className={u.chapter ? "font-medium" : "text-[#b45309]"}>{u.chapter || "No chapter"}</span>
                         <span className="block text-xs text-[#5b6675]">{u.businessCategory || u.company || "—"}</span>
                       </>
+                    ) : role === "director" ? (
+                      <span className="font-medium">{u.chapter}</span>
                     ) : (
                       u.company || "—"
                     )}
@@ -462,10 +489,10 @@ function People({ role, meId, onCreated, refreshStats }) {
                         <Pencil size={13} /> Edit
                       </button>
                     )}
-                    <button onClick={() => patch(u, { resetPassword: true })} className="mr-1 inline-flex items-center gap-1 rounded-lg border-0 bg-[#f0f2f7] px-2.5 py-1.5 text-xs font-semibold text-[#1a2a80] hover:bg-[#e2e7ef]">
+                    {!readOnly && <button onClick={() => patch(u, { resetPassword: true })} className="mr-1 inline-flex items-center gap-1 rounded-lg border-0 bg-[#f0f2f7] px-2.5 py-1.5 text-xs font-semibold text-[#1a2a80] hover:bg-[#e2e7ef]">
                       <KeyRound size={13} /> Reset password
-                    </button>
-                    {u.id !== meId && (
+                    </button>}
+                    {!readOnly && u.id !== meId && (
                       <button
                         onClick={() => patch(u, { status: u.status === "active" ? "disabled" : "active" })}
                         className={`inline-flex rounded-lg border-0 px-2.5 py-1.5 text-xs font-semibold ${u.status === "active" ? "bg-[#fef2f2] text-[#b91c1c]" : "bg-[#ecfdf3] text-[#14532d]"}`}
@@ -482,6 +509,7 @@ function People({ role, meId, onCreated, refreshStats }) {
       )}
       {editing && (
         <EditMemberModal
+          limited={readOnly}
           user={editing}
           onClose={() => setEditing(null)}
           onSaved={(u) => {
@@ -512,7 +540,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [me, setMe] = useState(null);
   const [stats, setStats] = useState(null);
-  const [tab, setTab] = useState("applications");
+  const [tab, setTab] = useState(null);
   const [created, setCreated] = useState(null);
   const [pwOpen, setPwOpen] = useState(false);
 
@@ -523,11 +551,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     api("/api/auth/me")
       .then((d) => {
-        if (d.user?.role !== "admin") router.replace("/admin/login");
-        else setMe(d.user);
+        if (!["admin", "director"].includes(d.user?.role)) return router.replace("/admin/login");
+        setMe(d.user);
+        setTab(d.user.role === "director" ? "meetings" : "applications");
+        if (d.user.role === "admin") refreshStats();
       })
       .catch(() => router.replace("/admin/login"));
-    refreshStats();
   }, [router, refreshStats]);
 
   async function logout() {
@@ -536,14 +565,21 @@ export default function AdminDashboard() {
     router.refresh();
   }
 
-  if (!me) return <div className="flex min-h-screen items-center justify-center bg-[#f4f6fb] text-[#5b6675]">Loading admin…</div>;
+  if (!me || !tab) return <div className="flex min-h-screen items-center justify-center bg-[#f4f6fb] text-[#5b6675]">Loading…</div>;
 
-  const TABS = [
-    { id: "applications", label: "Applications", icon: FileText, count: stats?.newApplications, countLabel: "new" },
-    { id: "members", label: "Members", icon: Users, count: stats?.members },
-    { id: "meetings", label: "Chapter Meetings", icon: CalendarCheck },
-    { id: "admins", label: "Admins", icon: ShieldCheck, count: stats?.admins },
-  ];
+  const isAdmin = me.role === "admin";
+  const TABS = isAdmin
+    ? [
+        { id: "applications", label: "Applications", icon: FileText, count: stats?.newApplications, countLabel: "new" },
+        { id: "members", label: "Members", icon: Users, count: stats?.members },
+        { id: "meetings", label: "Chapter Meetings", icon: CalendarCheck },
+        { id: "directors", label: "Chapter Directors", icon: UserCog, count: stats?.directors },
+        { id: "admins", label: "Admins", icon: ShieldCheck, count: stats?.admins },
+      ]
+    : [
+        { id: "meetings", label: "Chapter Meetings", icon: CalendarCheck },
+        { id: "members", label: `${me.chapter} Members`, icon: Users },
+      ];
 
   return (
     <div className="min-h-screen bg-[#f4f6fb]">
@@ -552,7 +588,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="iEagles" className="h-10 w-auto" />
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#f7b800]">Admin</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#f7b800]">{isAdmin ? "Admin" : `Chapter Director · ${me.chapter}`}</p>
               <p className="text-sm font-semibold">iEagles Business Network</p>
             </div>
           </div>
@@ -573,19 +609,21 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {[
-            ["New applications", stats?.newApplications],
-            ["All applications", stats?.applications],
-            ["Active members", stats?.activeMembers],
-            ["Admins", stats?.admins],
-          ].map(([l, v]) => (
-            <div key={l} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e2e7ef]">
-              <p className="text-3xl font-semibold text-[#1a2a80]">{v ?? "–"}</p>
-              <p className="text-sm text-[#5b6675]">{l}</p>
-            </div>
-          ))}
-        </div>
+        {isAdmin && (
+          <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {[
+              ["New applications", stats?.newApplications],
+              ["All applications", stats?.applications],
+              ["Active members", stats?.activeMembers],
+              ["Admins", stats?.admins],
+            ].map(([l, v]) => (
+              <div key={l} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-[#e2e7ef]">
+                <p className="text-3xl font-semibold text-[#1a2a80]">{v ?? "–"}</p>
+                <p className="text-sm text-[#5b6675]">{l}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="no-print mb-5 flex gap-1 overflow-x-auto rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-[#e2e7ef]" role="tablist">
           {TABS.map((t) => (
@@ -602,10 +640,11 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {tab === "applications" && <Applications onCreated={setCreated} refreshStats={refreshStats} />}
-        {tab === "members" && <People role="member" meId={me.id} onCreated={setCreated} refreshStats={refreshStats} />}
-        {tab === "meetings" && <ChapterForms />}
-        {tab === "admins" && <People role="admin" meId={me.id} onCreated={setCreated} refreshStats={refreshStats} />}
+        {tab === "applications" && isAdmin && <Applications onCreated={setCreated} refreshStats={refreshStats} />}
+        {tab === "members" && <People role="member" me={me} onCreated={setCreated} refreshStats={refreshStats} />}
+        {tab === "meetings" && <ChapterForms lockedChapter={isAdmin ? null : me.chapter} canEditCategories={isAdmin} />}
+        {tab === "directors" && isAdmin && <People role="director" me={me} onCreated={setCreated} refreshStats={refreshStats} />}
+        {tab === "admins" && isAdmin && <People role="admin" me={me} onCreated={setCreated} refreshStats={refreshStats} />}
       </main>
 
       {created && <TempPasswordModal data={created} onClose={() => setCreated(null)} />}

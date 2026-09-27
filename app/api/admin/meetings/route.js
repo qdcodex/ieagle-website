@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { requireRole, json } from "@/lib/auth";
+import { requireStaff, canUseChapter, chapterDenied, json } from "@/lib/auth";
 import { chapterMeetings } from "@/lib/chapterForms";
 import { CHAPTERS } from "@/lib/data";
 
@@ -10,19 +10,21 @@ const validChapter = (c) => CHAPTERS.some((x) => x.name === c);
 
 // GET ?chapter= — meetings of a chapter (Day 1, Day 2, …)
 export async function GET(req) {
-  const [, err] = await requireRole("admin");
+  const [me, err] = await requireStaff();
   if (err) return err;
   const chapter = new URL(req.url).searchParams.get("chapter");
   if (!validChapter(chapter)) return json({ error: "Choose a chapter." }, 400);
+  if (!canUseChapter(me, chapter)) return chapterDenied();
   return json({ meetings: await chapterMeetings(await getDb(), chapter) });
 }
 
 // POST { chapter, date, title? } — add a meeting
 export async function POST(req) {
-  const [admin, err] = await requireRole("admin");
+  const [me, err] = await requireStaff();
   if (err) return err;
   const b = await req.json().catch(() => ({}));
   if (!validChapter(b.chapter)) return json({ error: "Choose a chapter." }, 400);
+  if (!canUseChapter(me, b.chapter)) return chapterDenied();
   const date = new Date(b.date);
   if (!b.date || Number.isNaN(date.getTime())) return json({ error: "Choose the meeting date." }, 400);
   const db = await getDb();
@@ -31,7 +33,7 @@ export async function POST(req) {
   }
   const r = await db
     .collection("meetings")
-    .insertOne({ chapter: b.chapter, date, title: String(b.title || "").slice(0, 120), createdBy: admin._id, createdAt: new Date() });
+    .insertOne({ chapter: b.chapter, date, title: String(b.title || "").slice(0, 120), createdBy: me._id, createdAt: new Date() });
   const meetings = await chapterMeetings(db, b.chapter);
   return json({ meeting: meetings.find((m) => m.id === String(r.insertedId)), meetings }, 201);
 }

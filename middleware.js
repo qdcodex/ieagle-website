@@ -5,12 +5,13 @@ import { SESSION_COOKIE, verifySession } from "@/lib/session";
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
   const session = await verifySession(req.cookies.get(SESSION_COOKIE)?.value).catch(() => null);
+  const isStaff = session?.role === "admin" || session?.role === "director"; // chapter directors use a limited admin area
 
   if (pathname.startsWith("/admin")) {
     if (pathname === "/admin/login") {
-      return session?.role === "admin" ? NextResponse.redirect(new URL("/admin", req.url)) : NextResponse.next();
+      return isStaff ? NextResponse.redirect(new URL("/admin", req.url)) : NextResponse.next();
     }
-    if (session?.role !== "admin") {
+    if (!isStaff) {
       const url = new URL("/admin/login", req.url);
       url.searchParams.set("next", pathname);
       return NextResponse.redirect(url);

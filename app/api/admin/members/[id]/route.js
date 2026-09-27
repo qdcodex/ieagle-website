@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/db";
-import { requireRole, json, publicUser, hashPassword, MEMBER_TYPES } from "@/lib/auth";
+import { requireStaff, json, publicUser, hashPassword, MEMBER_TYPES } from "@/lib/auth";
 import { tempPassword } from "@/lib/temppass";
 import { CHAPTERS } from "@/lib/data";
 
@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 
 // PATCH { status?, memberType?, name?, phone?, company?, category?, chapter?, businessCategory?, joinedAt?, resetPassword? }
 export async function PATCH(req, { params }) {
-  const [admin, err] = await requireRole("admin");
+  const [admin, err] = await requireStaff();
   if (err) return err;
   const { id } = await params;
   if (!ObjectId.isValid(id)) return json({ error: "Not found." }, 404);
@@ -17,6 +17,13 @@ export async function PATCH(req, { params }) {
   const db = await getDb();
   const user = await db.collection("users").findOne({ _id });
   if (!user) return json({ error: "Not found." }, 404);
+
+  // Chapter directors: only members of their own chapter, and only business category / date of joining.
+  if (admin.role === "director") {
+    if (user.role !== "member" || user.chapter !== admin.chapter) return json({ error: "You can only manage members of your own chapter." }, 403);
+    const extra = Object.keys(b).filter((k) => !["businessCategory", "joinedAt"].includes(k));
+    if (extra.length) return json({ error: "Chapter directors can only change business category and date of joining." }, 403);
+  }
 
   const set = { updatedAt: new Date() };
   if (b.status !== undefined) {

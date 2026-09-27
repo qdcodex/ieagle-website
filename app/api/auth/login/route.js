@@ -25,11 +25,14 @@ export async function POST(req) {
 
   const user = await db.collection("users").findOne({ email });
   const ok = user && user.passwordHash && (await checkPassword(password, user.passwordHash));
-  if (!ok || user.role !== portal) {
+  // the staff portal serves admins and chapter directors
+  const roleOk = portal === "admin" ? ["admin", "director"].includes(user?.role) : user?.role === "member";
+  if (!ok || !roleOk) {
     recordFailure(key);
     return json({ error: "Incorrect email or password." }, 401);
   }
   if (user.status !== "active") return json({ error: "This account is disabled. Please contact the iEagles team." }, 403);
+  if (user.role === "director" && !user.chapter) return json({ error: "No chapter is assigned to this director account yet." }, 403);
   if (portal === "member" && body.memberType && user.memberType !== body.memberType) {
     return json(
       { error: `This account is registered under ${MEMBER_TYPES[user.memberType] ?? "another category"}. Please use that tab.` },
@@ -39,8 +42,8 @@ export async function POST(req) {
 
   clearFailures(key);
   await db.collection("users").updateOne({ _id: user._id }, { $set: { lastLoginAt: new Date() } });
-  const token = await signSession({ sub: String(user._id), role: user.role, name: user.name, email: user.email, memberType: user.memberType ?? null });
-  const res = json({ user: publicUser(user), redirect: user.role === "admin" ? "/admin" : "/members" });
+  const token = await signSession({ sub: String(user._id), role: user.role, name: user.name, email: user.email, memberType: user.memberType ?? null, chapter: user.chapter ?? null });
+  const res = json({ user: publicUser(user), redirect: user.role === "member" ? "/members" : "/admin" });
   res.cookies.set(sessionCookie(token));
   return res;
 }

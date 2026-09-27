@@ -35,7 +35,7 @@ function Form() {
     <form onSubmit={submit} className="grid gap-4">
       <label className="relative block">
         <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
-        <input className={input} type="email" placeholder="Admin email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className={input} type="email" placeholder="Email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </label>
       <label className="relative block">
         <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
@@ -43,7 +43,7 @@ function Form() {
       </label>
       <ErrorNote>{err}</ErrorNote>
       <button disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border-0 bg-[#f7b800] py-3.5 font-semibold text-[#1a2a80] shadow-lg transition hover:-translate-y-0.5 disabled:opacity-60">
-        <LogIn size={18} /> {busy ? "Signing in…" : "Sign in to admin"}
+        <LogIn size={18} /> {busy ? "Signing in…" : "Sign in"}
       </button>
     </form>
   );
@@ -60,9 +60,9 @@ export default function AdminLogin() {
             <img src="/logo.png" alt="iEagles" className="h-14 w-auto" />
             <div>
               <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#f7b800]">
-                <ShieldCheck size={14} /> Admin
+                <ShieldCheck size={14} /> Admin · Chapter Director
               </p>
-              <h1 className="!text-2xl !text-white">iEagles Admin Panel</h1>
+              <h1 className="!text-2xl !text-white">iEagles Staff Login</h1>
             </div>
           </div>
           <Suspense>

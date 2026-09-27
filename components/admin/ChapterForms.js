@@ -362,7 +362,7 @@ function Compiled({ chapter, report }) {
 
 /* ---------------- Categories ---------------- */
 
-function Categories({ chapter }) {
+function Categories({ chapter, canEdit }) {
   const [list, setList] = useState(null);
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(null);
@@ -424,10 +424,14 @@ function Categories({ chapter }) {
         <p className="pb-2 text-sm font-medium tracking-wide text-[#f7b800]">List of Category</p>
       </div>
       <div className="no-print mb-3 flex flex-wrap items-center justify-between gap-2">
-        <form onSubmit={add} className="flex flex-1 gap-2">
-          <input className={`${inputCls} max-w-sm`} placeholder="Add a new business category" value={name} onChange={(e) => setName(e.target.value)} />
-          <Btn type="submit" variant="gold"><Plus size={16} /> Add</Btn>
-        </form>
+        {canEdit ? (
+          <form onSubmit={add} className="flex flex-1 gap-2">
+            <input className={`${inputCls} max-w-sm`} placeholder="Add a new business category" value={name} onChange={(e) => setName(e.target.value)} />
+            <Btn type="submit" variant="gold"><Plus size={16} /> Add</Btn>
+          </form>
+        ) : (
+          <span className="flex-1" />
+        )}
         <div className="flex gap-2">
           <Btn variant="ghost" onClick={exportCsv} disabled={!list}><Download size={16} /> Excel (CSV)</Btn>
           <Btn variant="ghost" onClick={() => window.print()}><Printer size={16} /> Print</Btn>
@@ -444,7 +448,7 @@ function Categories({ chapter }) {
                 <th className={`${th} w-14`}>Sl.No</th>
                 <th className={`${th} text-left`}>Category</th>
                 {Array.from({ length: CATEGORY_SLOTS }, (_, i) => <th key={i} className={`${th} w-[19%]`}>{i + 1}</th>)}
-                <th className={`${th} no-print w-24`} />
+                {canEdit && <th className={`${th} no-print w-24`} />}
               </tr>
             </thead>
             <tbody>
@@ -465,17 +469,20 @@ function Categories({ chapter }) {
                   {Array.from({ length: CATEGORY_SLOTS }, (_, i) => (
                     <td key={i} className={`${td} ${c.members[i] ? "font-medium text-[#1a2a80]" : ""}`}>{c.members[i] ?? ""}</td>
                   ))}
-                  <td className={`${td} no-print whitespace-nowrap text-right`}>
+                  {canEdit && <td className={`${td} no-print whitespace-nowrap text-right`}>
                     <button onClick={() => setEditing({ id: c.id, name: c.name })} className="mr-1 rounded-lg border-0 bg-[#f0f2f7] p-1.5 text-[#1a2a80]" aria-label={`Rename ${c.name}`}><Pencil size={13} /></button>
                     <button onClick={() => remove(c)} className="rounded-lg border-0 bg-[#fef2f2] p-1.5 text-[#b91c1c]" aria-label={`Delete ${c.name}`}><Trash2 size={13} /></button>
-                  </td>
+                  </td>}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-      <p className="mt-2 text-xs text-[#5b6675]">Members appear here from the business category set on their profile (Members tab → Edit). Up to {CATEGORY_SLOTS} per category.</p>
+      <p className="mt-2 text-xs text-[#5b6675]">
+        Members appear here from the business category set on their profile (Members tab → Edit). Up to {CATEGORY_SLOTS} per category.
+        {!canEdit && " The master category list is managed by the iEagles admin."}
+      </p>
     </div>
   );
 }
@@ -489,8 +496,8 @@ const VIEWS = [
   { id: "categories", label: "List of Category", icon: Tags },
 ];
 
-export default function ChapterForms() {
-  const [chapter, setChapter] = useState(CHAPTERS[0].name);
+export default function ChapterForms({ lockedChapter = null, canEditCategories = true }) {
+  const [chapter, setChapter] = useState(lockedChapter ?? CHAPTERS[0].name);
   const [view, setView] = useState("weekly");
   const [meetings, setMeetings] = useState([]);
   const [report, setReport] = useState(null);
@@ -516,9 +523,13 @@ export default function ChapterForms() {
       <div className="no-print mb-4 flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2 text-sm font-semibold text-[#1a2a80]">
           Chapter
-          <select className={`${inputCls} !w-auto`} value={chapter} onChange={(e) => setChapter(e.target.value)}>
-            {CHAPTERS.map((c) => <option key={c.slug}>{c.name}</option>)}
-          </select>
+          {lockedChapter ? (
+            <span className="rounded-xl bg-white px-4 py-2.5 ring-1 ring-[#e2e7ef]">{lockedChapter}</span>
+          ) : (
+            <select className={`${inputCls} !w-auto`} value={chapter} onChange={(e) => setChapter(e.target.value)}>
+              {CHAPTERS.map((c) => <option key={c.slug}>{c.name}</option>)}
+            </select>
+          )}
         </label>
         <div className="flex flex-wrap gap-1 rounded-xl bg-white p-1 ring-1 ring-[#e2e7ef]">
           {VIEWS.map((v) => (
@@ -532,7 +543,7 @@ export default function ChapterForms() {
       {view === "weekly" && <WeeklySheet chapter={chapter} meetings={meetings} setMeetings={setMeetings} />}
       {(view === "attendance" || view === "compiled") &&
         (!report ? <p className="py-10 text-center text-[#5b6675]">Loading…</p> : view === "attendance" ? <Attendance chapter={chapter} report={report} /> : <Compiled chapter={chapter} report={report} />)}
-      {view === "categories" && <Categories chapter={chapter} />}
+      {view === "categories" && <Categories chapter={chapter} canEdit={canEditCategories} />}
     </div>
   );
 }
