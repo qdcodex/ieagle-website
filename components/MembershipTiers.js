@@ -28,12 +28,20 @@ export default function MembershipTiers({ compact = false }) {
               <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/20 blur-2xl transition group-hover:scale-150" />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 transition group-hover:opacity-100" />
               <Icon size={compact ? 26 : 34} style={{ color: s.accent }} className="relative mb-4" />
-              <p className="relative text-xs font-bold uppercase tracking-[0.2em] opacity-70">Membership</p>
+              <p className="relative text-xs font-bold uppercase tracking-[0.2em] opacity-70">{c.available ? "Membership" : "Coming soon"}</p>
               <h3 className={`relative font-semibold ${compact ? "text-xl" : "text-3xl"}`} style={{ color: s.fg }}>
                 {c.t}
               </h3>
               <p className={`relative mt-2 flex-1 ${compact ? "text-sm" : "text-lg"} opacity-90`}>{c.d}</p>
-              {!compact && (
+              {!compact && !c.available && (
+                <span
+                  className="relative mt-6 inline-flex items-center gap-2 self-start rounded-full bg-black/15 px-4 py-2 text-sm font-semibold"
+                  style={{ color: s.fg }}
+                >
+                  Coming soon
+                </span>
+              )}
+              {!compact && c.available && (
                 <Link
                   href={`/membership?category=${encodeURIComponent(c.t)}#apply`}
                   className="relative mt-6 inline-flex items-center gap-2 self-start rounded-full bg-white/20 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:gap-3 hover:bg-white/30"

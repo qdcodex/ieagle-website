@@ -74,8 +74,11 @@ export default function MembershipApplication() {
 
   useEffect(() => {
     setApp(newApplication());
+    // Preselect from ?category= if that category is open, else the only open one
+    const open = MEMBERSHIP.categories.filter((x) => x.available);
     const c = new URLSearchParams(window.location.search).get("category");
-    if (MEMBERSHIP.categories.some((x) => x.t === c)) setF((p) => ({ ...p, category: c }));
+    const pick = open.find((x) => x.t === c) ?? (open.length === 1 ? open[0] : null);
+    if (pick) setF((p) => ({ ...p, category: pick.t }));
   }, []);
 
   const set = (field) => (e) => {
@@ -106,7 +109,8 @@ export default function MembershipApplication() {
   }
 
   function reset() {
-    setF(blank);
+    const open = MEMBERSHIP.categories.filter((x) => x.available);
+    setF({ ...blank, category: open.length === 1 ? open[0].t : "" });
     setApp(newApplication());
     setDone("");
   }
@@ -160,8 +164,9 @@ export default function MembershipApplication() {
                     <select {...common} className={`${control} cursor-pointer`} style={{ minWidth: 0 }}>
                       <option value="">Select membership category</option>
                       {MEMBERSHIP.categories.map((c) => (
-                        <option key={c.t} value={c.t}>
+                        <option key={c.t} value={c.t} disabled={!c.available}>
                           {c.t} — {c.d}
+                          {c.available ? "" : " (coming soon)"}
                         </option>
                       ))}
                     </select>

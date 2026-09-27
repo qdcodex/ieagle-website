@@ -54,7 +54,7 @@ export default function EnquiryForm({ topics = [], defaultTopic, mode = "contact
             <select className={input} value={f.category} onChange={set("category")} aria-label="Membership category">
               <option value="">Membership category</option>
               {MEMBERSHIP.categories.map((c) => (
-                <option key={c.t}>{c.t}</option>
+                <option key={c.t} disabled={!c.available}>{c.t}{c.available ? "" : " (coming soon)"}</option>
               ))}
             </select>
           )}
