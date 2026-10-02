@@ -1,18 +1,13 @@
 // Creates (or updates the password of) an admin account in MongoDB.
 // Reads MONGODB_URI, MONGODB_DB, ADMIN_EMAIL, ADMIN_NAME, ADMIN_PASSWORD from .env.local.
 // Usage: npm run create-admin
-import { readFileSync, existsSync } from "node:fs";
 import { MongoClient } from "mongodb";
 import bcrypt from "bcryptjs";
+import { loadEnv } from "./_env.mjs";
 
-if (existsSync(".env.local")) {
-  for (const line of readFileSync(".env.local", "utf8").split(/\r?\n/)) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-    if (m && !(m[1] in process.env)) process.env[m[1]] = m[2];
-  }
-}
+loadEnv();
 
-const { MONGODB_URI, MONGODB_DB = "ieagles", ADMIN_EMAIL, ADMIN_NAME = "iEagles Admin", ADMIN_PASSWORD } = process.env;
+const { MONGODB_URI, MONGODB_DB = "ieagle", ADMIN_EMAIL, ADMIN_NAME = "iEagles Admin", ADMIN_PASSWORD } = process.env;
 if (!MONGODB_URI || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
   console.error("Set MONGODB_URI, ADMIN_EMAIL and ADMIN_PASSWORD in .env.local first.");
   process.exit(1);

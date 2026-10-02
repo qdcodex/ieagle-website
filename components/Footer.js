@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUp, MessageCircle, Phone, Mail, MapPin, Globe } from "lucide-react";
+import { ArrowRight, ArrowUp, MessageCircle, Phone, Mail, MapPin, Globe, ShieldCheck } from "lucide-react";
 import { NAV, SITE } from "@/lib/data";
 import { HOME } from "@/lib/content";
 import { SocialLinks } from "@/components/SocialFloat";
@@ -13,6 +13,7 @@ const COLUMNS = [
     links: [
       { label: "Membership", href: "/membership" },
       { label: "Member Log in", href: "/member-login" },
+      { label: "Admin Login", href: "/admin/login" },
       { label: "Chapters", href: "/chapters" },
       { label: "Events", href: "/events" },
       { label: "Magazine", href: "/magazine" },
@@ -88,6 +89,9 @@ export default function Footer() {
               {SITE.partner.name}
             </a>
           </span>
+          <Link href="/admin/login" className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 font-semibold text-white/90 transition hover:bg-[#f7b800] hover:text-[#1a2a80]">
+            <ShieldCheck size={14} /> Admin Login
+          </Link>
           <a href="#top" className="inline-flex items-center gap-1 hover:text-[#f7b800]">
             Back to top <ArrowUp size={14} />
           </a>

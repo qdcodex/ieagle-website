@@ -172,7 +172,10 @@ export default function MemberLoginPanel() {
           </form>
 
           <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-[#e2e7ef] pt-6 text-sm sm:flex-row sm:items-center">
-            <span className="text-[#5b6675]">Not a member yet?</span>
+            <span className="text-[#5b6675]">
+              Not a member yet?
+              <Link href="/admin/login" className="mt-1 block font-semibold text-[#1a2a80] hover:underline">Admin or Chapter Director? Sign in here →</Link>
+            </span>
             <div className="flex flex-wrap gap-4">
               <Link className="inline-flex items-center gap-1 font-semibold text-[#1a2a80]" href="/membership#apply">
                 <MessageCircle size={16} /> Apply for membership

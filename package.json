@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "create-admin": "node scripts/create-admin.mjs"
+    "create-admin": "node scripts/create-admin.mjs",
+    "seed": "node scripts/seed.mjs",
+    "db:copy-local": "node scripts/copy-local.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

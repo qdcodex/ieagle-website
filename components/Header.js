@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Phone, Mail, ArrowRight, UserCircle } from "lucide-react";
+import { ChevronDown, Phone, Mail, ArrowRight, UserCircle, ShieldCheck } from "lucide-react";
 import MobileMenu, { MenuButton } from "@/components/MobileMenu";
 import { NAV, SITE } from "@/lib/data";
 
@@ -49,6 +49,9 @@ export default function Header() {
             <a href={`https://wa.me/${SITE.whatsapp}`} className="inline-flex items-center gap-1.5 hover:text-[#f7b800]">
               <Phone size={12} /> Helpline: {SITE.whatsappDisplay}
             </a>
+            <Link href="/admin/login" className="inline-flex items-center gap-1.5 font-semibold text-[#f7b800] hover:text-white">
+              <ShieldCheck size={12} /> Admin Login
+            </Link>
           </span>
         </div>
       </div>
