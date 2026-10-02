@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { X, Copy, Check } from "lucide-react";
+import { X, Copy, Check, Eye, EyeOff } from "lucide-react";
 
 export const inputCls =
   "w-full rounded-xl border border-[#d6dbe8] bg-white px-3.5 py-2.5 text-[#1c2430] outline-none transition focus:border-[#1a2a80] focus:ring-4 focus:ring-[#1a2a80]/10";
@@ -97,6 +97,25 @@ export const fmtDate = (d) => (d ? new Date(d).toLocaleDateString("en-IN", { day
 export const fmtDateTime = (d) =>
   d ? new Date(d).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
 
+/** Password field with a show / hide button. */
+export function PasswordInput({ className = "", ...props }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span className="relative block">
+      <input {...props} type={show ? "text" : "password"} className={`${inputCls} pr-12 ${className}`} />
+      <button
+        type="button"
+        onClick={() => setShow(!show)}
+        aria-label={show ? "Hide password" : "Show password"}
+        aria-pressed={show}
+        className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg border-0 bg-transparent text-[#5b6675] hover:bg-[#f0f2f7] hover:text-[#1a2a80]"
+      >
+        {show ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+    </span>
+  );
+}
+
 /** Password change form used by admins and members. */
 export function ChangePasswordForm({ onDone }) {
   const [f, setF] = useState({ current: "", next: "", confirm: "" });
@@ -123,13 +142,13 @@ export function ChangePasswordForm({ onDone }) {
   return (
     <form onSubmit={submit} className="grid gap-4">
       <Field label="Current password">
-        <input className={inputCls} type="password" autoComplete="current-password" required value={f.current} onChange={set("current")} />
+        <PasswordInput autoComplete="current-password" required value={f.current} onChange={set("current")} />
       </Field>
       <Field label="New password (8+ characters, letters and numbers)">
-        <input className={inputCls} type="password" autoComplete="new-password" required minLength={8} value={f.next} onChange={set("next")} />
+        <PasswordInput autoComplete="new-password" required minLength={8} value={f.next} onChange={set("next")} />
       </Field>
       <Field label="Confirm new password">
-        <input className={inputCls} type="password" autoComplete="new-password" required value={f.confirm} onChange={set("confirm")} />
+        <PasswordInput autoComplete="new-password" required value={f.confirm} onChange={set("confirm")} />
       </Field>
       <ErrorNote>{err}</ErrorNote>
       {ok && <p className="rounded-xl bg-[#ecfdf3] px-4 py-3 text-sm text-[#14532d]">Password updated.</p>}

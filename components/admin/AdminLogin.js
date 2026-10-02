@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { ShieldCheck, Mail, Lock, LogIn, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Mail, Lock, LogIn, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { api, ErrorNote } from "./ui";
 
 const input =
@@ -16,6 +16,7 @@ function Form() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [show, setShow] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
@@ -39,7 +40,16 @@ function Form() {
       </label>
       <label className="relative block">
         <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60" />
-        <input className={input} type="password" placeholder="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input className={`${input} pr-12`} type={show ? "text" : "password"} placeholder="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <button
+          type="button"
+          onClick={() => setShow(!show)}
+          aria-label={show ? "Hide password" : "Show password"}
+          aria-pressed={show}
+          className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg border-0 bg-transparent text-white/70 hover:bg-white/10 hover:text-white"
+        >
+          {show ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
       </label>
       <ErrorNote>{err}</ErrorNote>
       <button disabled={busy} className="inline-flex items-center justify-center gap-2 rounded-xl border-0 bg-[#f7b800] py-3.5 font-semibold text-[#1a2a80] shadow-lg transition hover:-translate-y-0.5 disabled:opacity-60">

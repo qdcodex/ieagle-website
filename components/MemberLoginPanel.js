@@ -154,7 +154,7 @@ export default function MemberLoginPanel() {
             <label className="relative block">
               <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#5b6675]" />
               <input className={input} type={show ? "text" : "password"} placeholder="Password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-              <button type="button" onClick={() => setShow(!show)} aria-label="Toggle password" className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5b6675]">
+              <button type="button" onClick={() => setShow(!show)} aria-label={show ? "Hide password" : "Show password"} aria-pressed={show} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5b6675]">
                 {show ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </label>
