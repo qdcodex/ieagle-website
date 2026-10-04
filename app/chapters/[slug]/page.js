@@ -5,6 +5,7 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/home/Reveal";
 import ChapterMap from "@/components/ChapterMap";
 import EnquiryForm from "@/components/EnquiryForm";
+import { ChapterDirector, ChapterMemberCount, ChapterMemberCards } from "@/components/ChapterPeople";
 import { Section, Heading } from "@/components/blocks";
 import { CHAPTERS_INFO } from "@/lib/content";
 import { CHAPTERS, CHAPTER_DETAILS, BUSINESSES, UPCOMING_EVENTS, SITE, wa } from "@/lib/data";
@@ -54,18 +55,10 @@ export default async function ChapterProfile({ params }) {
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
           <div className="grid gap-6 sm:grid-cols-2">
             <Box icon={UserCheck} title="Chapter Director">
-              {d.director ? <p className="text-lg font-semibold text-[#1a2a80]">{d.director}</p> : <TBA>To be announced</TBA>}
+              <ChapterDirector slug={c.slug} fallback={d.director} />
             </Box>
             <Box icon={Users} title="Members" delay={60}>
-              {d.members?.length ? (
-                <ul className="m-0 list-none space-y-1 p-0">
-                  {d.members.map((m) => (
-                    <li key={m.name}><b className="text-[#1a2a80]">{m.name}</b>{m.business ? ` — ${m.business}` : ""}</li>
-                  ))}
-                </ul>
-              ) : (
-                <TBA>Member list coming soon</TBA>
-              )}
+              <ChapterMemberCount slug={c.slug} />
             </Box>
             <Box icon={Building2} title="Businesses" delay={120}>
               {businesses.length ? (
@@ -134,7 +127,13 @@ export default async function ChapterProfile({ params }) {
         </div>
       </Section>
 
-      <Section tone="white" className="!py-14">
+      {/* Members — from the admin member list */}
+      <Section id="members" tone="white">
+        <Heading eyebrow={`${c.name} Chapter`} title="Our Members" intro="Entrepreneurs and professionals of this chapter." />
+        <ChapterMemberCards slug={c.slug} chapterName={c.name} />
+      </Section>
+
+      <Section className="!py-14">
         <Heading eyebrow="Other chapters" title="Explore the network" className="!mb-6" />
         <div className="flex flex-wrap gap-3">
           {CHAPTERS.filter((x) => x.slug !== c.slug).map((x) => (
