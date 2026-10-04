@@ -5,7 +5,7 @@ import { SITE } from "@/lib/data";
 // Simple rule-based assistant (no external AI service). Each rule: keywords -> reply.
 const RULES = [
   { k: ["hello", "hi", "hey", "vanakkam"], a: "Hello! 👋 Welcome to iEagles Business Network — Where Business Meets Purpose. Ask me about membership, chapters, programs, events, the magazine or the business directory." },
-  { k: ["login", "log in", "sign in", "executive", "governing"], a: "Members can log in from the Member Log in page (Executive Members, Governing board, Chapter Members).", link: "/member-login" },
+  { k: ["login", "log in", "sign in", "executive", "governing"], a: "All members sign in from the Member Log in page with their email and password.", link: "/member-login" },
   { k: ["member", "join", "category", "categories", "elite", "gold", "platinum", "diamond", "millionaire", "benefit"], a: "Become an iEagle! Membership categories: Elite, Gold, Platinum, Diamond, Millionaire and Partner. See who can join and what members get.", link: "/membership" },
   { k: ["chapter", "karungal", "nagercoil", "thuckalay", "marthandam", "colachel", "monday market", "state", "district", "kanyakumari"], a: "Our Kanyakumari District chapters: Karungal, Nagercoil, Thuckalay, Marthandam, Colachel and Monday Market. Find a chapter or start one.", link: "/chapters" },
   { k: ["academy", "course", "learn", "training", "leadership"], a: "The iEagles Academy offers programs from entrepreneurship to AI & technology, plus Learning & Leadership training.", link: "/academy" },
