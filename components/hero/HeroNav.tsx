@@ -11,8 +11,9 @@ export default function HeroNav() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
+  // z-40 keeps the navbar and its dropdowns above the hero text below it
   return (
-    <div className="relative px-6 pt-6 md:px-12 lg:px-16">
+    <div className="relative z-40 px-6 pt-6 md:px-12 lg:px-16">
       <nav className="liquid-glass !overflow-visible flex items-center justify-between rounded-xl px-4 py-2">
         <Link href="/" aria-label="iEagles home" className="flex shrink-0 items-center" onClick={close}>
           <img src="/logo.png" alt="iEagles" className="h-14 w-auto md:h-16" />
@@ -40,7 +41,7 @@ export default function HeroNav() {
                       alignRight ? "right-0" : "left-0"
                     }`}
                   >
-                    <div className={`rounded-xl border border-white/20 bg-[#0f1a55]/85 p-1.5 shadow-2xl backdrop-blur-md ${wide ? "grid w-[460px] grid-cols-2 gap-x-1" : "min-w-[220px]"}`}>
+                    <div className={`rounded-xl border border-white/20 bg-[#0f1a55]/95 p-1.5 shadow-2xl backdrop-blur-md ${wide ? "grid w-[460px] grid-cols-2 gap-x-1" : "min-w-[220px]"}`}>
                       {item.children.map((c) => (
                         <Link key={c.href + c.label} href={c.href} className="block rounded-lg px-3 py-2 text-sm hover:bg-white/15 hover:text-[#f7b800]">
                           {c.label}
