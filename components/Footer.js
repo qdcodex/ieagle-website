@@ -7,7 +7,7 @@ import { SocialLinks } from "@/components/SocialFloat";
 const byLabel = (label) => NAV.find((n) => n.label === label);
 const COLUMNS = [
   { title: "About us", links: byLabel("About us").children.slice(0, 7) },
-  { title: "Programs", links: byLabel("Programs").children },
+  { title: "Programs & Events", links: [...byLabel("Programs & Events").children, { label: "iEagles Academy", href: "/academy" }] },
   {
     title: "Network",
     links: [
@@ -15,7 +15,6 @@ const COLUMNS = [
       { label: "Member Log in", href: "/member-login" },
       { label: "Admin Login", href: "/admin/login" },
       { label: "Chapters", href: "/chapters" },
-      { label: "Events", href: "/events" },
       { label: "Magazine", href: "/magazine" },
       { label: "Business Directory", href: "/business-directory" },
       { label: "Partnerships", href: "/partnerships" },

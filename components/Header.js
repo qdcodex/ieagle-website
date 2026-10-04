@@ -30,7 +30,7 @@ export default function Header() {
   const close = () => setOpen(false);
   // Highlight one menu item: the section itself, else the first section that lists this page
   const matches = (item) =>
-    item.href === "/" ? pathname === "/" : pathname.startsWith(item.href) || item.children?.some((c) => !c.href.includes("#") && pathname.startsWith(c.href));
+    item.href === "/" ? pathname === "/" : pathname.startsWith(item.href) || item.children?.some((c) => pathname.startsWith(c.href.split("#")[0]));
   const activeLabel = (ITEMS.find((i) => i.href !== "/" && pathname.startsWith(i.href)) ?? ITEMS.find(matches))?.label;
   const isActive = (item) => item.label === activeLabel;
 

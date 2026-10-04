@@ -24,9 +24,9 @@ const STATS = [
 
 const PROGRAMS = [
   { icon: Network, t: "Networking", d: "Connect beyond business cards — chapter meetings, one-to-ones, conclaves and more.", href: "/programs#networking" },
-  { icon: GraduationCap, t: "iEagles Academy", d: "Learn. Apply. Grow. Lead. Programs from entrepreneurship to AI & technology.", href: "/programs#academy" },
+  { icon: GraduationCap, t: "iEagles Academy", d: "Learn. Apply. Grow. Lead. Programs from entrepreneurship to AI & technology.", href: "/academy" },
   { icon: Handshake, t: "Business Development", d: "From connection to collaboration — turn introductions into business opportunities.", href: "/programs#business-development" },
-  { icon: Crown, t: "Learning & Leadership", d: "Learn from experienced business leaders, experts and fellow members.", href: "/programs#learning" },
+  { icon: Crown, t: "Learning & Leadership", d: "Learn from experienced business leaders, experts and fellow members.", href: "/academy#learning" },
   { icon: Trophy, t: "Recognition & Awards", d: "Celebrate excellence — entrepreneur of the month, leadership, community impact.", href: "/awards" },
   { icon: BookOpen, t: "Brand Your Business Magazine", d: "Increase your visibility and tell your story. Your business deserves to be seen.", href: "/magazine" },
 ];
