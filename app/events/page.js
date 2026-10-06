@@ -4,7 +4,8 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/home/Reveal";
 import { Section, Heading, CtaBand } from "@/components/blocks";
 import { EVENTS_INFO } from "@/lib/content";
-import { PAST_EVENTS, UPCOMING_EVENTS, wa } from "@/lib/data";
+import { UPCOMING_EVENTS, wa } from "@/lib/data";
+import PastEventsGallery from "@/components/PastEventsGallery";
 
 export const metadata = { title: "Events — iEagles Business Network" };
 
@@ -85,33 +86,20 @@ export default function Events() {
 
       {/* Past */}
       <Section id="past" tone="white">
-        <Heading eyebrow="Look back" title="Past Events" />
-        {PAST_EVENTS.length ? (
-          <div className="grid gap-6 md:grid-cols-3">
-            {PAST_EVENTS.map((e, i) => (
-              <Reveal key={e.title} delay={i * 100}>
-                <div className="overflow-hidden rounded-3xl border border-[#e2e7ef] bg-[#f6f8fb] shadow-sm">
-                  {e.image ? <img src={e.image} alt={e.title} className="h-48 w-full object-cover" /> : <div className="flex h-48 items-center justify-center bg-[#1a2a80] text-white/70"><Camera size={36} /></div>}
-                  <div className="p-6">
-                    <h3 className="mb-2 text-xl">{e.title}</h3>
-                    <p className="flex items-center gap-2 text-sm text-[#5b6675]"><CalendarDays size={15} /> {e.date}</p>
-                    <p className="flex items-center gap-2 text-sm text-[#5b6675]"><MapPin size={15} /> {e.place}</p>
+        <Heading eyebrow="Look back" title="Past Events" intro="Highlights and photos from iEagles meetings, conclaves and award nights." />
+        <PastEventsGallery
+          fallback={
+              <Reveal>
+                <div className="grid items-center gap-8 rounded-3xl border border-dashed border-[#e2e7ef] bg-[#f6f8fb] p-8 md:grid-cols-[auto_1fr] md:p-10">
+                  <span className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#1a2a80] text-[#f7b800]"><Camera size={36} /></span>
+                  <div>
+                    <h3 className="text-2xl">Event highlights coming soon</h3>
+                    <p className="mt-1 text-[#5b6675]">Photos and highlights from iEagles meetings, conclaves and award nights will be published here after each event.</p>
                   </div>
                 </div>
               </Reveal>
-            ))}
-          </div>
-        ) : (
-          <Reveal>
-            <div className="grid items-center gap-8 rounded-3xl border border-dashed border-[#e2e7ef] bg-[#f6f8fb] p-8 md:grid-cols-[auto_1fr] md:p-10">
-              <span className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#1a2a80] text-[#f7b800]"><Camera size={36} /></span>
-              <div>
-                <h3 className="text-2xl">Event highlights coming soon</h3>
-                <p className="mt-1 text-[#5b6675]">Photos and highlights from iEagles meetings, conclaves and award nights will be published here after each event.</p>
-              </div>
-            </div>
-          </Reveal>
-        )}
+          }
+        />
       </Section>
 
       <Section className="!pt-0">

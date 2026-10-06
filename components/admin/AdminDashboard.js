@@ -3,9 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  LogOut, KeyRound, ExternalLink, FileText, Users, ShieldCheck, UserPlus, Search, RefreshCw, CheckCircle2, MessageCircle, Inbox, Pencil, CalendarCheck, UserCog,
+  LogOut, KeyRound, ExternalLink, FileText, Users, ShieldCheck, UserPlus, Search, RefreshCw, CheckCircle2, MessageCircle, Inbox, Pencil, CalendarCheck, UserCog, Images,
 } from "lucide-react";
 import ChapterForms from "./ChapterForms";
+import PastEvents from "./PastEvents";
 import { api, Modal, Field, Btn, ErrorNote, Badge, CopyText, inputCls, fmtDate, fmtDateTime, ChangePasswordForm } from "./ui";
 import { MEMBERSHIP } from "@/lib/content";
 import { CHAPTERS } from "@/lib/data";
@@ -573,6 +574,7 @@ export default function AdminDashboard() {
         { id: "applications", label: "Applications", icon: FileText, count: stats?.newApplications, countLabel: "new" },
         { id: "members", label: "Members", icon: Users, count: stats?.members },
         { id: "meetings", label: "Chapter Meetings", icon: CalendarCheck },
+        { id: "events", label: "Past Events", icon: Images },
         { id: "directors", label: "Chapter Directors", icon: UserCog, count: stats?.directors },
         { id: "admins", label: "Admins", icon: ShieldCheck, count: stats?.admins },
       ]
@@ -642,6 +644,7 @@ export default function AdminDashboard() {
 
         {tab === "applications" && isAdmin && <Applications onCreated={setCreated} refreshStats={refreshStats} />}
         {tab === "members" && <People role="member" me={me} onCreated={setCreated} refreshStats={refreshStats} />}
+        {tab === "events" && isAdmin && <PastEvents />}
         {tab === "meetings" && <ChapterForms lockedChapter={isAdmin ? null : me.chapter} canEditCategories={isAdmin} />}
         {tab === "directors" && isAdmin && <People role="director" me={me} onCreated={setCreated} refreshStats={refreshStats} />}
         {tab === "admins" && isAdmin && <People role="admin" me={me} onCreated={setCreated} refreshStats={refreshStats} />}
