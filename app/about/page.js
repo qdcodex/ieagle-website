@@ -1,6 +1,6 @@
 import {
   Eye, Target, Handshake, Rocket, Crown, Share2, Lightbulb, Puzzle, Megaphone, GraduationCap, Users, HeartHandshake,
-  ShieldCheck, Award, Flame, Crosshair, Feather, Mountain, Landmark, Briefcase, MapPinned, UserCheck, User, ArrowRight,
+  ShieldCheck, Award, Flame, Crosshair, Feather, Mountain, Landmark, Briefcase, Map, MapPinned, UserCheck, User, ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
@@ -17,6 +17,7 @@ const TRAIT_ICONS = [Eye, Flame, Crosshair, Feather, Crown, Mountain];
 const LEVELS = [
   { icon: Landmark, t: "Governing Board", d: "Sets the direction, policies and standards of the network." },
   { icon: Briefcase, t: "Executive Members", d: "Lead network-wide initiatives, programs and growth." },
+  { icon: Map, t: "State", d: "Coordinates the districts within each state." },
   { icon: MapPinned, t: "District", d: "Coordinates the chapters within each district." },
   { icon: UserCheck, t: "Chapter Director", d: "Leads a local chapter, its meetings and activities." },
   { icon: User, t: "Chapter Members", d: "Entrepreneurs and professionals who connect, collaborate, learn and grow." },
