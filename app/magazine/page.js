@@ -21,9 +21,10 @@ export default function Magazine() {
         title={MAGAZINE.title}
         crumb="Magazine"
         subtitle={MAGAZINE.body}
+        topLabel="Year"
+        topLinks={MAGAZINE_YEARS.map((y) => ({ label: String(y), href: `#year-${y}` }))}
         links={[
           { label: "Features", href: "#features" },
-          ...MAGAZINE_YEARS.map((y) => ({ label: String(y), href: `#year-${y}` })),
           { label: "Submit Your Story", href: "#submit" },
         ]}
       />

@@ -1,7 +1,10 @@
 import Link from "next/link";
 
-/** Inner-page banner. links: optional in-page jump links [{ label, href }]. */
-export default function PageHero({ title, subtitle, eyebrow, crumb, links }) {
+/**
+ * Inner-page banner. links: optional in-page jump links [{ label, href }].
+ * topLinks: optional row shown on its own line above them (e.g. magazine years), with topLabel in front.
+ */
+export default function PageHero({ title, subtitle, eyebrow, crumb, links, topLinks, topLabel }) {
   return (
     <div className="relative overflow-hidden text-white" style={{ background: "linear-gradient(135deg,#0f1a55 0%,#1a2a80 45%,#2c3fa8 100%)" }}>
       <div
@@ -21,8 +24,22 @@ export default function PageHero({ title, subtitle, eyebrow, crumb, links }) {
         <h1 className="max-w-3xl !text-white text-4xl md:text-6xl" style={{ letterSpacing: "-0.035em", lineHeight: 1.05 }}>{title}</h1>
         {subtitle && <p className="mt-4 max-w-2xl text-lg text-white/80">{subtitle}</p>}
         <div className="mt-6 h-1 w-20 rounded bg-[#f7b800]" />
+        {topLinks?.length > 0 && (
+          <div className="mt-8 flex flex-wrap items-center gap-2">
+            {topLabel && <span className="mr-1 text-sm font-semibold uppercase tracking-[0.18em] text-[#f7b800]">{topLabel}</span>}
+            {topLinks.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="rounded-full bg-[#f7b800] px-5 py-1.5 text-sm font-semibold text-[#1a2a80] transition hover:bg-white"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        )}
         {links?.length > 0 && (
-          <div className="mt-8 flex flex-wrap gap-2">
+          <div className={`flex flex-wrap gap-2 ${topLinks?.length > 0 ? "mt-3" : "mt-8"}`}>
             {links.map((l) => (
               <Link
                 key={l.href}
