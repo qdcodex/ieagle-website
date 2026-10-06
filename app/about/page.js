@@ -53,7 +53,7 @@ export default function About() {
           <Reveal delay={120}>
             <div className="relative rounded-3xl bg-gradient-to-br from-[#eef2ff] to-white p-8 shadow-xl ring-1 ring-black/5">
               <div className="dots absolute inset-0 rounded-3xl" />
-              <img src="/logo.png" alt="iEagles" className="floaty relative mx-auto w-full max-w-[260px]" />
+              <img src="/logo.png" alt="iEagles" className="floaty relative mx-auto block w-full max-w-[260px]" />
               <p className="relative mt-4 text-center text-lg font-semibold text-[#1a2a80]">{BRAND.tagline}</p>
               <p className="relative text-center text-[#f7b800]">{BRAND.pillars.join(" • ")}</p>
             </div>

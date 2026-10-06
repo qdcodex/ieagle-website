@@ -38,7 +38,7 @@ export default function Magazine() {
               <div className="relative mx-auto w-full max-w-[280px] rotate-[-3deg] overflow-hidden rounded-2xl p-6 text-white shadow-2xl transition hover:rotate-0" style={{ background: "linear-gradient(160deg,#0f1a55,#1a2a80 60%,#2c3fa8)", aspectRatio: "3 / 4" }}>
                 <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#f7b800]">iEagles</p>
                 <p className="text-3xl font-semibold leading-none">Brand Your Business</p>
-                <img src="/logo.png" alt="" className="mx-auto mt-6 h-32 w-auto" />
+                <img src="/logo.png" alt="" className="mx-auto mt-6 block h-32 w-auto" />
                 <div className="absolute inset-x-6 bottom-6">
                   <div className="mb-2 h-1 w-12 rounded bg-[#f7b800]" />
                   <p className="text-sm text-white/80">{MAGAZINE.closing}</p>
