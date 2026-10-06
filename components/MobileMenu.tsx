@@ -9,7 +9,7 @@ import { NAV, SITE } from "@/lib/data";
 
 const ICONS: Record<string, typeof Home> = {
   Home, "About us": Info, "iEagles Academy": GraduationCap, "Programs & Events": CalendarDays, Membership: UserCircle,
-  Chapters: MapPinned, Magazine: BookOpen, "Contact us": Phone, "Business Directory": Store,
+  "Contact us": Phone, "Business Directory": Store,
 };
 
 export function MenuButton({ open, onClick }: { open: boolean; onClick: () => void }) {

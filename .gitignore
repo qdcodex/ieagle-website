@@ -8,3 +8,4 @@ next-env.d.ts
 # local secrets
 .env*.local
 .env
+.next-verify
